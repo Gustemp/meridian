@@ -132,6 +132,7 @@
         <button class="nav-btn" data-section="videos"><span class="nav-icon">▶</span> Videos</button>
         <button class="nav-btn" data-section="pexels"><span class="nav-icon">◎</span> Pexels API</button>
         <button class="nav-btn" data-section="pages"><span class="nav-icon">▤</span> Pages</button>
+        <button class="nav-btn" data-section="collaborators" id="nav-collaborators"><span class="nav-icon">👥</span> Team</button>
       </nav>
       <div class="sidebar-footer">
         <button class="logout-btn" onclick="logout()">Logout</button>
@@ -245,6 +246,30 @@
         <button class="btn-add" onclick="showNewPageEditor()">+ Create New Page</button>
         <div id="pages-list"></div>
       </section>
+
+      <!-- Collaborators -->
+      <section class="section" id="section-collaborators">
+        <div class="section-header"><h2>Team</h2><p>Manage collaborators who can access this site's admin panel</p></div>
+        <div class="form-group" style="max-width: 600px; padding: 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 2rem;">
+          <h3 style="font-size: 1rem; font-weight: 500; margin-bottom: 1rem;">Add Collaborator</h3>
+          <div class="form-row">
+            <div class="form-group" style="margin-bottom: 0.75rem;">
+              <label for="collab-username">Username</label>
+              <input type="text" id="collab-username" placeholder="username">
+            </div>
+            <div class="form-group" style="margin-bottom: 0.75rem;">
+              <label for="collab-password">Password</label>
+              <input type="password" id="collab-password" placeholder="password">
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="collab-email">Email (optional)</label>
+            <input type="email" id="collab-email" placeholder="email@example.com">
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="addCollaborator()">Add Collaborator</button>
+        </div>
+        <div id="collaborators-list"></div>
+      </section>
     </main>
   </div>
   <div class="toast" id="toast"></div>
@@ -297,6 +322,7 @@
       renderMenuItems();
       renderVideoList();
       renderPagesList();
+      loadCollaborators();
     }
 
     // Brand
@@ -565,6 +591,91 @@
       toast.textContent = msg;
       toast.className = `toast ${type} show`;
       setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // Collaborators
+    async function loadCollaborators() {
+      try {
+        const result = await apiFetch(`/api/site/${slug}/collaborators`);
+        if (result.success) {
+          renderCollaboratorsList(result.collaborators);
+        } else {
+          // If user is a collaborator, hide the Team section
+          document.getElementById('nav-collaborators').style.display = 'none';
+        }
+      } catch (err) {
+        // Hide Team section if there's an error (likely permission denied)
+        document.getElementById('nav-collaborators').style.display = 'none';
+      }
+    }
+
+    function renderCollaboratorsList(collaborators) {
+      const container = document.getElementById('collaborators-list');
+      if (!collaborators || collaborators.length === 0) {
+        container.innerHTML = '<p style="color:var(--muted);text-align:center;padding:2rem;">No collaborators yet</p>';
+        return;
+      }
+      container.innerHTML = collaborators.map(collab => `
+        <div class="page-card">
+          <div class="page-card-header">
+            <div>
+              <div class="page-card-title">${collab.username}</div>
+              <div class="page-card-slug">${collab.email || 'No email'} • Added ${new Date(collab.addedAt).toLocaleDateString()}</div>
+            </div>
+            <div class="page-card-actions">
+              <button class="btn-delete" onclick="removeCollaborator(${collab.id}, '${collab.username}')">Remove</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function addCollaborator() {
+      const username = document.getElementById('collab-username').value.trim();
+      const password = document.getElementById('collab-password').value;
+      const email = document.getElementById('collab-email').value.trim();
+      
+      if (!username || !password) {
+        return showToast('Username and password are required', 'error');
+      }
+
+      try {
+        const result = await apiFetch(`/api/site/${slug}/collaborators`, {
+          method: 'POST',
+          body: JSON.stringify({ username, password, email })
+        });
+
+        if (result.success) {
+          document.getElementById('collab-username').value = '';
+          document.getElementById('collab-password').value = '';
+          document.getElementById('collab-email').value = '';
+          await loadCollaborators();
+          showToast('Collaborator added!', 'success');
+        } else {
+          showToast(result.error || 'Failed to add collaborator', 'error');
+        }
+      } catch (err) {
+        showToast('Error adding collaborator', 'error');
+      }
+    }
+
+    async function removeCollaborator(id, username) {
+      if (!confirm(`Remove collaborator "${username}"?`)) return;
+      
+      try {
+        const result = await apiFetch(`/api/site/${slug}/collaborators/${id}`, {
+          method: 'DELETE'
+        });
+
+        if (result.success) {
+          await loadCollaborators();
+          showToast('Collaborator removed!', 'success');
+        } else {
+          showToast(result.error || 'Failed to remove collaborator', 'error');
+        }
+      } catch (err) {
+        showToast('Error removing collaborator', 'error');
+      }
     }
   </script>
 </body>

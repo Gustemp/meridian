@@ -132,24 +132,39 @@ app.post('/api/auth/master/login', (req, res) => {
   res.status(401).json({ error: 'Credenciais inválidas' });
 });
 
-// Site admin login
+// Site admin login (also supports collaborators)
 app.post('/api/auth/site/:slug/login', (req, res) => {
   const { username, password } = req.body;
   const { slug } = req.params;
   const master = readMaster();
   const site = master.sites.find(s => s.slug === slug);
   if (!site) return res.status(404).json({ error: 'Site não encontrado' });
+  
+  // Check if site admin
   if (username === site.admin.username && password === site.admin.password) {
     const token = generateToken();
-    sessions.set(token, { type: 'site', slug, username });
-    return res.json({ success: true, token, type: 'site', slug });
+    sessions.set(token, { type: 'site', slug, username, role: 'admin' });
+    return res.json({ success: true, token, type: 'site', slug, role: 'admin' });
   }
+  
+  // Check if collaborator
+  const content = readSiteContent(slug);
+  if (content && content.collaborators) {
+    const collaborator = content.collaborators.find(c => c.username === username && c.password === password);
+    if (collaborator) {
+      const token = generateToken();
+      sessions.set(token, { type: 'site', slug, username, role: 'collaborator' });
+      return res.json({ success: true, token, type: 'site', slug, role: 'collaborator' });
+    }
+  }
+  
   // Also allow master admin to login to any site
   if (username === master.masterAdmin.username && password === master.masterAdmin.password) {
     const token = generateToken();
     sessions.set(token, { type: 'master', username });
     return res.json({ success: true, token, type: 'master', slug });
   }
+  
   res.status(401).json({ error: 'Credenciais inválidas' });
 });
 
@@ -441,6 +456,75 @@ app.delete('/api/site/:slug/pages/:pageSlug', authMiddleware('site'), (req, res)
   const content = readSiteContent(req.params.slug);
   if (!content) return res.status(404).json({ error: 'Site não encontrado' });
   content.pages = (content.pages || []).filter(p => p.slug !== req.params.pageSlug);
+  writeSiteContent(req.params.slug, content);
+  res.json({ success: true });
+});
+
+// ============================================================
+// COLLABORATORS (only site admin can manage)
+// ============================================================
+
+// Get collaborators (site admin only)
+app.get('/api/site/:slug/collaborators', authMiddleware('site'), (req, res) => {
+  // Only site admin (not collaborators) can view collaborators
+  if (req.session.type !== 'master' && req.session.role === 'collaborator') {
+    return res.status(403).json({ error: 'Apenas o admin do site pode gerir colaboradores' });
+  }
+  const content = readSiteContent(req.params.slug);
+  if (!content) return res.status(404).json({ error: 'Site não encontrado' });
+  const collaborators = (content.collaborators || []).map(c => ({
+    id: c.id,
+    username: c.username,
+    email: c.email,
+    role: c.role,
+    addedAt: c.addedAt
+  }));
+  res.json({ success: true, collaborators });
+});
+
+// Add collaborator (site admin only)
+app.post('/api/site/:slug/collaborators', authMiddleware('site'), (req, res) => {
+  if (req.session.type !== 'master' && req.session.role === 'collaborator') {
+    return res.status(403).json({ error: 'Apenas o admin do site pode adicionar colaboradores' });
+  }
+  const content = readSiteContent(req.params.slug);
+  if (!content) return res.status(404).json({ error: 'Site não encontrado' });
+  const { username, password, email, role } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Username e password são obrigatórios' });
+  }
+  if (!content.collaborators) content.collaborators = [];
+  // Check if username already exists
+  if (content.collaborators.find(c => c.username === username)) {
+    return res.status(400).json({ error: 'Username já existe' });
+  }
+  const newCollaborator = {
+    id: Date.now(),
+    username,
+    password,
+    email: email || '',
+    role: role || 'collaborator',
+    addedAt: new Date().toISOString()
+  };
+  content.collaborators.push(newCollaborator);
+  writeSiteContent(req.params.slug, content);
+  res.json({ success: true, collaborator: {
+    id: newCollaborator.id,
+    username: newCollaborator.username,
+    email: newCollaborator.email,
+    role: newCollaborator.role,
+    addedAt: newCollaborator.addedAt
+  }});
+});
+
+// Delete collaborator (site admin only)
+app.delete('/api/site/:slug/collaborators/:id', authMiddleware('site'), (req, res) => {
+  if (req.session.type !== 'master' && req.session.role === 'collaborator') {
+    return res.status(403).json({ error: 'Apenas o admin do site pode remover colaboradores' });
+  }
+  const content = readSiteContent(req.params.slug);
+  if (!content) return res.status(404).json({ error: 'Site não encontrado' });
+  content.collaborators = (content.collaborators || []).filter(c => c.id !== parseInt(req.params.id));
   writeSiteContent(req.params.slug, content);
   res.json({ success: true });
 });
