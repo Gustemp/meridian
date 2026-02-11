@@ -1,0 +1,61 @@
+{
+  "brand": {
+    "name": "MIRIDIAN",
+    "logo": ""
+  },
+  "hero": {
+    "title": "Wealth and Quality",
+    "description": "Access your desire with good assets and lifestyle "
+  },
+  "menu": [
+    {
+      "id": 1,
+      "text": "Services",
+      "url": "#services"
+    },
+    {
+      "id": 2,
+      "text": "Projects",
+      "url": "#portfolio"
+    },
+    {
+      "id": 3,
+      "text": "Contact",
+      "url": "#contato"
+    }
+  ],
+  "videos": {
+    "source": "pexels",
+    "theme": "lifestyle",
+    "interval": 3000,
+    "items": [
+      {
+        "id": 1769644401950,
+        "url": "/uploads/1769644401944-730769096.mp4",
+        "type": "local",
+        "filename": "openart-video_b8d11f49_1769642256776.mp4"
+      },
+      {
+        "id": 1769644414152,
+        "url": "/uploads/1769644414137-918695760.mp4",
+        "type": "local",
+        "filename": "openart-video_7e19328e_1769643334947.mp4"
+      },
+      {
+        "id": 1769644642922,
+        "url": "/uploads/1769644642911-848544781.mp4",
+        "type": "local",
+        "filename": "openart-video_9333a0da_1769642731559.mp4"
+      },
+      {
+        "id": 1769644650750,
+        "url": "/uploads/1769644650725-965342852.mp4",
+        "type": "local",
+        "filename": "openart-video_c0a89b99_1769644526687.mp4"
+      }
+    ]
+  },
+  "pexels": {
+    "apiKey": "BkWIrFr6DY5ikSHeoLV458i9pabhcPb0kJFl9SUSHALCiz8r92OhYyGl"
+  }
+}

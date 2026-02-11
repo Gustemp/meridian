@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loading...</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --color-bg: #0a0a0a; --color-text: #ffffff;
+      --color-text-muted: rgba(255, 255, 255, 0.6);
+      --color-overlay: rgba(0, 0, 0, 0.5);
+      --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --transition-smooth: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-fast: 0.2s ease;
+    }
+    html, body {
+      height: 100%; overflow: hidden; font-family: var(--font-family);
+      background-color: var(--color-bg); color: var(--color-text);
+      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+    }
+    .video-container {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; overflow: hidden;
+    }
+    .video-bg {
+      position: absolute; top: 50%; left: 50%; min-width: 100%; min-height: 100%;
+      width: auto; height: auto; transform: translate(-50%, -50%);
+      object-fit: cover; opacity: 0; transition: opacity 1s ease-in-out;
+    }
+    .video-bg.active { opacity: 1; }
+    .video-overlay {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.6) 100%);
+    }
+    .main-content {
+      position: relative; z-index: 1; width: 100%; height: 100vh;
+      display: flex; flex-direction: column; justify-content: space-between; padding: 3rem 4rem;
+    }
+    .header { animation: fadeInDown 1s ease forwards; animation-delay: 0.2s; opacity: 0; }
+    .logo { font-size: 1.25rem; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase; }
+    .hero { max-width: 600px; animation: fadeInUp 1s ease forwards; animation-delay: 0.4s; opacity: 0; }
+    .hero-title {
+      font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 500;
+      line-height: 1.1; margin-bottom: 1.5rem; letter-spacing: -0.02em;
+    }
+    .hero-description {
+      font-size: 1rem; font-weight: 300; line-height: 1.7;
+      color: var(--color-text-muted); margin-bottom: 2.5rem; max-width: 480px;
+    }
+    .menu-nav { display: flex; flex-direction: column; gap: 0.75rem; }
+    .menu-link {
+      display: inline-flex; align-items: center; gap: 0.75rem;
+      color: var(--color-text); text-decoration: none; font-size: 0.95rem;
+      font-weight: 400; transition: var(--transition-fast); width: fit-content;
+    }
+    .menu-text { position: relative; }
+    .menu-text::after {
+      content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 1px;
+      background-color: var(--color-text); transform: scaleX(1);
+      transform-origin: left; transition: transform var(--transition-fast);
+    }
+    .menu-arrow { font-size: 1.1rem; transition: transform var(--transition-fast); }
+    .menu-link:hover { color: var(--color-text); }
+    .menu-link:hover .menu-arrow { transform: translateX(5px); }
+    .menu-link:hover .menu-text::after { transform: scaleX(0); transform-origin: right; }
+    .video-progress {
+      position: fixed; bottom: 3rem; right: 4rem; display: flex; gap: 0.5rem;
+      animation: fadeIn 1s ease forwards; animation-delay: 0.8s; opacity: 0;
+    }
+    .progress-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.3); cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+    .progress-dot.active { background-color: var(--color-text); transform: scale(1.2); }
+    .progress-dot:hover { background-color: rgba(255, 255, 255, 0.6); }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 768px) {
+      .main-content { padding: 2rem; }
+      .hero-title { font-size: 2rem; }
+      .hero-description { font-size: 0.9rem; }
+      .video-progress { bottom: 2rem; right: 2rem; }
+      .menu-link { font-size: 0.9rem; }
+    }
+    @media (max-width: 480px) {
+      .main-content { padding: 1.5rem; }
+      .logo { font-size: 1rem; }
+      .hero-title { font-size: 1.75rem; }
+      .video-progress { bottom: 1.5rem; right: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="video-container">
+    <video id="video-bg-1" class="video-bg active" muted loop playsinline autoplay></video>
+    <video id="video-bg-2" class="video-bg" muted loop playsinline></video>
+    <div class="video-overlay"></div>
+  </div>
+  <main class="main-content">
+    <header class="header">
+      <div class="logo" id="brand-name">Loading...</div>
+    </header>
+    <section class="hero">
+      <h1 class="hero-title" id="hero-title"></h1>
+      <p class="hero-description" id="hero-description"></p>
+      <nav class="menu-nav" id="menu-nav"></nav>
+    </section>
+    <div class="video-progress" id="video-progress"></div>
+  </main>
+
+  <script>
+    const slug = window.location.pathname.split('/')[2];
+
+    class SitePage {
+      constructor() {
+        this.videos = [];
+        this.currentVideoIndex = 0;
+        this.videoInterval = 3000;
+        this.video1 = document.getElementById('video-bg-1');
+        this.video2 = document.getElementById('video-bg-2');
+        this.activeVideo = this.video1;
+        this.progressContainer = document.getElementById('video-progress');
+        this.intervalId = null;
+        this.init();
+      }
+
+      async init() {
+        await this.loadContent();
+        this.setupVideoRotation();
+      }
+
+      async loadContent() {
+        try {
+          const response = await fetch(`/api/site/${slug}/content`);
+          const content = await response.json();
+
+          document.getElementById('brand-name').textContent = content.brand.name;
+          document.title = content.brand.name;
+          document.getElementById('hero-title').textContent = content.hero.title;
+          document.getElementById('hero-description').textContent = content.hero.description;
+
+          this.renderMenu(content.menu);
+
+          this.videoInterval = content.videos.interval || 3000;
+          if (content.videos.items && content.videos.items.length > 0) {
+            this.videos = content.videos.items.map(v => {
+              if (v.url.startsWith('http')) {
+                return `/api/video-proxy?url=${encodeURIComponent(v.url)}`;
+              }
+              return v.url;
+            });
+          } else {
+            this.videos = [`/api/video-proxy?url=${encodeURIComponent('https://videos.pexels.com/video-files/3571264/3571264-hd_1920_1080_30fps.mp4')}`];
+          }
+          this.renderProgressDots();
+        } catch (error) {
+          console.error('Error loading content:', error);
+        }
+      }
+
+      renderMenu(menuItems) {
+        const menuNav = document.getElementById('menu-nav');
+        menuNav.innerHTML = menuItems.map(item => `
+          <a href="${item.url}" class="menu-link">
+            <span class="menu-text">${item.text}</span>
+            <span class="menu-arrow">\u2192</span>
+          </a>
+        `).join('');
+      }
+
+      renderProgressDots() {
+        this.progressContainer.innerHTML = this.videos.map((_, index) => `
+          <div class="progress-dot ${index === 0 ? 'active' : ''}" data-index="${index}"></div>
+        `).join('');
+        this.progressContainer.querySelectorAll('.progress-dot').forEach(dot => {
+          dot.addEventListener('click', (e) => {
+            this.goToVideo(parseInt(e.target.dataset.index));
+          });
+        });
+      }
+
+      setupVideoRotation() {
+        if (this.videos.length === 0) return;
+        this.loadVideo(this.video1, this.videos[0], true);
+        if (this.videos.length > 1) {
+          this.loadVideo(this.video2, this.videos[1], false);
+        }
+      }
+
+      loadVideo(videoElement, src, shouldPlay = false) {
+        videoElement.oncanplay = null;
+        videoElement.onerror = null;
+        videoElement.onloadeddata = null;
+        videoElement.src = src;
+        videoElement.onloadeddata = () => {
+          if (shouldPlay) {
+            videoElement.classList.add('active');
+            videoElement.play().then(() => {
+              if (this.videos.length > 1 && !this.intervalId) this.startRotation();
+            }).catch(() => {
+              videoElement.muted = true;
+              videoElement.play().catch(() => {});
+            });
+          }
+        };
+        videoElement.onerror = () => console.error('Error loading video:', src);
+        videoElement.load();
+      }
+
+      startRotation() {
+        this.intervalId = setInterval(() => this.nextVideo(), this.videoInterval);
+      }
+
+      stopRotation() {
+        if (this.intervalId) { clearInterval(this.intervalId); this.intervalId = null; }
+      }
+
+      nextVideo() {
+        this.goToVideo((this.currentVideoIndex + 1) % this.videos.length);
+      }
+
+      goToVideo(index) {
+        if (index === this.currentVideoIndex) return;
+        this.stopRotation();
+        const inactiveVideo = this.activeVideo === this.video1 ? this.video2 : this.video1;
+        this.loadVideo(inactiveVideo, this.videos[index], false);
+        setTimeout(() => {
+          this.activeVideo.classList.remove('active');
+          inactiveVideo.classList.add('active');
+          inactiveVideo.play().catch(() => {});
+          this.activeVideo = inactiveVideo;
+          this.currentVideoIndex = index;
+          this.updateProgressDots();
+          if (this.videos.length > 1) this.startRotation();
+        }, 500);
+      }
+
+      updateProgressDots() {
+        this.progressContainer.querySelectorAll('.progress-dot').forEach((dot, i) => {
+          dot.classList.toggle('active', i === this.currentVideoIndex);
+        });
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => new SitePage());
+  </script>
+</body>
+</html>

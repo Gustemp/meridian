@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Painel de Controle</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="admin-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h1 class="sidebar-logo">Admin</h1>
+        <a href="/" class="view-site" target="_blank">Ver Site →</a>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-section="brand">
+          <span class="nav-icon">◆</span>
+          Marca
+        </button>
+        <button class="nav-item" data-section="hero">
+          <span class="nav-icon">◇</span>
+          Hero
+        </button>
+        <button class="nav-item" data-section="menu">
+          <span class="nav-icon">≡</span>
+          Menu
+        </button>
+        <button class="nav-item" data-section="videos">
+          <span class="nav-icon">▶</span>
+          Vídeos
+        </button>
+        <button class="nav-item" data-section="pexels">
+          <span class="nav-icon">◎</span>
+          Pexels API
+        </button>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Brand Section -->
+      <section class="section active" id="section-brand">
+        <div class="section-header">
+          <h2>Marca</h2>
+          <p>Configure o nome e identidade da sua marca</p>
+        </div>
+        
+        <div class="form-group">
+          <label for="brand-name">Nome da Marca</label>
+          <input type="text" id="brand-name" placeholder="Ex: STUDIO">
+        </div>
+        
+        <button class="btn-save" onclick="saveBrand()">Salvar Alterações</button>
+      </section>
+
+      <!-- Hero Section -->
+      <section class="section" id="section-hero">
+        <div class="section-header">
+          <h2>Hero</h2>
+          <p>Edite o título e descrição principal</p>
+        </div>
+        
+        <div class="form-group">
+          <label for="hero-title">Título Principal</label>
+          <input type="text" id="hero-title" placeholder="Ex: Criamos experiências digitais únicas">
+        </div>
+        
+        <div class="form-group">
+          <label for="hero-description">Descrição</label>
+          <textarea id="hero-description" rows="4" placeholder="Descreva sua empresa ou serviço..."></textarea>
+        </div>
+        
+        <button class="btn-save" onclick="saveHero()">Salvar Alterações</button>
+      </section>
+
+      <!-- Menu Section -->
+      <section class="section" id="section-menu">
+        <div class="section-header">
+          <h2>Menu de Navegação</h2>
+          <p>Configure os links do menu</p>
+        </div>
+        
+        <div id="menu-items" class="menu-items">
+          <!-- Menu items will be rendered here -->
+        </div>
+        
+        <button class="btn-add" onclick="addMenuItem()">+ Adicionar Link</button>
+        <button class="btn-save" onclick="saveMenu()">Salvar Menu</button>
+      </section>
+
+      <!-- Videos Section -->
+      <section class="section" id="section-videos">
+        <div class="section-header">
+          <h2>Vídeos de Fundo</h2>
+          <p>Gerencie os vídeos que aparecem no background</p>
+        </div>
+        
+        <div class="form-group">
+          <label for="video-interval">Intervalo de Troca (ms)</label>
+          <input type="number" id="video-interval" placeholder="3000" min="1000" step="500">
+          <small>Tempo em milissegundos entre cada vídeo (1000ms = 1 segundo)</small>
+        </div>
+        
+        <div class="upload-area">
+          <h3>Upload de Vídeo</h3>
+          <input type="file" id="video-upload" accept="video/*" hidden>
+          <button class="btn-upload" onclick="document.getElementById('video-upload').click()">
+            Selecionar Vídeo
+          </button>
+          <p class="upload-info">Formatos aceitos: MP4, WebM, OGG (máx. 100MB)</p>
+        </div>
+        
+        <div class="video-list" id="video-list">
+          <!-- Videos will be rendered here -->
+        </div>
+        
+        <button class="btn-save" onclick="saveVideoSettings()">Salvar Configurações</button>
+      </section>
+
+      <!-- Pexels Section -->
+      <section class="section" id="section-pexels">
+        <div class="section-header">
+          <h2>Pexels API</h2>
+          <p>Busque vídeos gratuitos do Pexels</p>
+        </div>
+        
+        <div class="form-group">
+          <label for="pexels-api-key">API Key</label>
+          <input type="password" id="pexels-api-key" placeholder="Sua API Key do Pexels">
+          <small>Obtenha sua API Key gratuita em <a href="https://www.pexels.com/api/" target="_blank">pexels.com/api</a></small>
+        </div>
+        
+        <button class="btn-save" onclick="savePexelsKey()">Salvar API Key</button>
+        
+        <div class="pexels-search">
+          <h3>Buscar Vídeos</h3>
+          <div class="search-row">
+            <input type="text" id="pexels-query" placeholder="Ex: lifestyle, fashion, tech...">
+            <button class="btn-search" onclick="searchPexels()">Buscar</button>
+          </div>
+        </div>
+        
+        <div class="pexels-results" id="pexels-results">
+          <!-- Search results will be rendered here -->
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast"></div>
+
+  <script src="admin.js"></script>
+</body>
+</html>

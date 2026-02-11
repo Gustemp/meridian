@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --bg: #0a0a0a; --surface: #141414; --border: #2a2a2a; --text: #fff; --muted: rgba(255,255,255,0.5); --danger: #ff4757; --font: 'Inter', sans-serif; }
+    html, body { height: 100%; font-family: var(--font); background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; }
+    .container { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+    .login-box { width: 100%; max-width: 400px; animation: fadeIn 0.6s ease; }
+    .back { color: var(--muted); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 2rem; transition: color 0.2s; }
+    .back:hover { color: var(--text); }
+    h1 { font-size: 1.75rem; font-weight: 500; margin-bottom: 0.5rem; }
+    .site-name { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+    .form-group { margin-bottom: 1.25rem; }
+    label { display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 0.5rem; }
+    input { width: 100%; padding: 0.875rem 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 0.95rem; font-family: inherit; transition: border 0.2s; }
+    input:focus { outline: none; border-color: var(--text); }
+    input::placeholder { color: var(--muted); }
+    .btn { width: 100%; padding: 0.875rem; background: var(--text); color: var(--bg); border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 500; font-family: inherit; cursor: pointer; transition: all 0.2s; margin-top: 0.5rem; }
+    .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .error { color: var(--danger); font-size: 0.85rem; margin-top: 1rem; display: none; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="login-box">
+      <a href="/" class="back">← Back</a>
+      <h1>Site Admin</h1>
+      <p class="site-name" id="site-info">Loading...</p>
+      <form id="login-form">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" placeholder="Username" autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Password" autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn">Login</button>
+        <p class="error" id="error"></p>
+      </form>
+    </div>
+  </div>
+  <script>
+    const slug = window.location.pathname.split('/')[2];
+    document.getElementById('site-info').textContent = `Site: ${slug}`;
+
+    // Check if already logged in
+    (async () => {
+      const token = localStorage.getItem('site_token_' + slug);
+      if (token) {
+        const res = await fetch('/api/auth/check', { headers: { 'x-auth-token': token } });
+        const data = await res.json();
+        if (data.authenticated) window.location.href = `/s/${slug}/admin`;
+      }
+    })();
+
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorEl = document.getElementById('error');
+      try {
+        const res = await fetch(`/api/auth/site/${slug}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+        if (data.success) {
+          localStorage.setItem('site_token_' + slug, data.token);
+          window.location.href = `/s/${slug}/admin`;
+        } else {
+          errorEl.textContent = data.error || 'Login failed';
+          errorEl.style.display = 'block';
+        }
+      } catch (err) {
+        errorEl.textContent = 'Connection error';
+        errorEl.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>

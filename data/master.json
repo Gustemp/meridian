@@ -1,0 +1,30 @@
+{
+  "masterAdmin": {
+    "username": "admin",
+    "password": "admin123"
+  },
+  "sites": [
+    {
+      "id": "miridian",
+      "slug": "miridian",
+      "name": "MIRIDIAN",
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "active": true,
+      "admin": {
+        "username": "miridian",
+        "password": "miridian123"
+      }
+    },
+    {
+      "id": "realstate-cripto",
+      "slug": "realstate-cripto",
+      "name": "RealState Cripto",
+      "createdAt": "2026-02-11T16:37:09.666Z",
+      "active": true,
+      "admin": {
+        "username": "admin",
+        "password": "admin"
+      }
+    }
+  ]
+}

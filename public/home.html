@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIRIDIAN - Website Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0a0a0a; --surface: #141414; --border: #2a2a2a;
+      --text: #ffffff; --muted: rgba(255,255,255,0.5);
+      --accent: #ffffff; --font: 'Inter', -apple-system, sans-serif;
+    }
+    html, body { height: 100%; font-family: var(--font); background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; }
+    .container { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; }
+    .logo { font-size: 1.5rem; font-weight: 700; letter-spacing: 0.3em; margin-bottom: 0.5rem; }
+    .subtitle { color: var(--muted); font-size: 0.9rem; margin-bottom: 3rem; }
+    .actions { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+    .btn { padding: 1rem 2rem; border-radius: 8px; font-size: 0.95rem; font-family: inherit; font-weight: 500; cursor: pointer; text-decoration: none; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 0.5rem; }
+    .btn-primary { background: var(--accent); color: var(--bg); border: none; }
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-secondary { background: none; color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { border-color: var(--text); }
+    .sites-section { margin-top: 4rem; width: 100%; max-width: 600px; }
+    .sites-section h3 { font-size: 0.85rem; font-weight: 500; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem; }
+    .site-card { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 0.75rem; transition: all 0.2s ease; }
+    .site-card:hover { border-color: rgba(255,255,255,0.2); }
+    .site-name { font-weight: 500; font-size: 1rem; }
+    .site-slug { color: var(--muted); font-size: 0.8rem; margin-top: 0.25rem; }
+    .site-link { color: var(--muted); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+    .site-link:hover { color: var(--text); }
+    .empty { color: var(--muted); text-align: center; padding: 2rem; font-size: 0.9rem; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .container > * { animation: fadeIn 0.6s ease forwards; opacity: 0; }
+    .container > *:nth-child(1) { animation-delay: 0.1s; }
+    .container > *:nth-child(2) { animation-delay: 0.2s; }
+    .container > *:nth-child(3) { animation-delay: 0.3s; }
+    .container > *:nth-child(4) { animation-delay: 0.4s; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">MIRIDIAN</div>
+    <p class="subtitle">Website Builder Platform</p>
+    <div class="actions">
+      <a href="/master/login" class="btn btn-primary">Master Admin</a>
+    </div>
+    <div class="sites-section">
+      <h3>Active Sites</h3>
+      <div id="sites-list"><p class="empty">Loading...</p></div>
+    </div>
+  </div>
+  <script>
+    (async () => {
+      try {
+        const res = await fetch('/api/master/sites', { headers: { 'x-auth-token': localStorage.getItem('master_token') || '' } });
+        if (!res.ok) {
+          // Try public listing - just show links if we know slugs
+          document.getElementById('sites-list').innerHTML = '<p class="empty">Login as Master Admin to see all sites</p>';
+          return;
+        }
+        const data = await res.json();
+        const container = document.getElementById('sites-list');
+        if (data.sites.length === 0) {
+          container.innerHTML = '<p class="empty">No sites created yet</p>';
+          return;
+        }
+        container.innerHTML = data.sites.filter(s => s.active).map(site => `
+          <div class="site-card">
+            <div>
+              <div class="site-name">${site.name}</div>
+              <div class="site-slug">/s/${site.slug}</div>
+            </div>
+            <a href="/s/${site.slug}" class="site-link">Visit →</a>
+          </div>
+        `).join('');
+      } catch (e) {
+        document.getElementById('sites-list').innerHTML = '<p class="empty">Login as Master Admin to see all sites</p>';
+      }
+    })();
+  </script>
+</body>
+</html>

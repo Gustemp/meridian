@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Master Admin - MIRIDIAN Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0a0a0a; --surface: #141414; --surface-hover: #1a1a1a; --border: #2a2a2a;
+      --text: #fff; --muted: rgba(255,255,255,0.5); --accent: #fff;
+      --danger: #ff4757; --success: #2ed573; --font: 'Inter', sans-serif;
+    }
+    html, body { height: 100%; font-family: var(--font); background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; }
+    .layout { display: flex; min-height: 100vh; }
+    .sidebar { width: 260px; background: var(--surface); border-right: 1px solid var(--border); padding: 2rem 1.5rem; position: fixed; height: 100vh; display: flex; flex-direction: column; }
+    .sidebar-logo { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.15em; margin-bottom: 0.25rem; }
+    .sidebar-sub { font-size: 0.75rem; color: var(--muted); margin-bottom: 2rem; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 0.5rem; flex: 1; }
+    .nav-btn { display: flex; align-items: center; gap: 0.75rem; padding: 0.875rem 1rem; background: none; border: none; color: var(--muted); font-size: 0.9rem; font-family: inherit; cursor: pointer; border-radius: 8px; transition: all 0.2s; text-align: left; }
+    .nav-btn:hover { background: var(--surface-hover); color: var(--text); }
+    .nav-btn.active { background: var(--accent); color: var(--bg); }
+    .nav-icon { width: 20px; text-align: center; }
+    .sidebar-footer { padding-top: 1rem; border-top: 1px solid var(--border); }
+    .logout-btn { width: 100%; padding: 0.75rem; background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 8px; font-family: inherit; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+    .logout-btn:hover { border-color: var(--danger); color: var(--danger); }
+    .main { flex: 1; margin-left: 260px; padding: 3rem; max-width: 900px; }
+    .section { display: none; }
+    .section.active { display: block; animation: fadeIn 0.3s ease; }
+    .section-header { margin-bottom: 2rem; }
+    .section-header h2 { font-size: 1.75rem; font-weight: 500; margin-bottom: 0.5rem; }
+    .section-header p { color: var(--muted); font-size: 0.9rem; }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 0.5rem; }
+    .form-group input { width: 100%; padding: 0.875rem 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 0.95rem; font-family: inherit; transition: border 0.2s; }
+    .form-group input:focus { outline: none; border-color: var(--accent); }
+    .form-group input::placeholder { color: var(--muted); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .btn { padding: 0.875rem 2rem; border-radius: 8px; font-size: 0.9rem; font-weight: 500; font-family: inherit; cursor: pointer; transition: all 0.2s; border: none; }
+    .btn-primary { background: var(--accent); color: var(--bg); }
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-danger { background: none; border: 1px solid var(--danger); color: var(--danger); }
+    .btn-danger:hover { background: var(--danger); color: #fff; }
+    .btn-sm { padding: 0.5rem 1rem; font-size: 0.8rem; }
+    .site-card { padding: 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1rem; transition: all 0.2s; }
+    .site-card:hover { border-color: rgba(255,255,255,0.2); }
+    .site-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; }
+    .site-card-name { font-size: 1.1rem; font-weight: 500; }
+    .site-card-slug { color: var(--muted); font-size: 0.8rem; }
+    .site-card-meta { display: flex; gap: 1rem; color: var(--muted); font-size: 0.8rem; margin-bottom: 1rem; }
+    .site-card-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .site-card-actions a, .site-card-actions button { padding: 0.5rem 1rem; font-size: 0.8rem; border-radius: 6px; font-family: inherit; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; }
+    .action-visit { background: none; border: 1px solid var(--border); color: var(--text); }
+    .action-visit:hover { border-color: var(--text); }
+    .action-admin { background: none; border: 1px solid var(--border); color: var(--muted); }
+    .action-admin:hover { border-color: var(--text); color: var(--text); }
+    .action-toggle { background: none; border: 1px solid var(--success); color: var(--success); }
+    .action-toggle.inactive { border-color: var(--danger); color: var(--danger); }
+    .action-delete { background: none; border: 1px solid var(--danger); color: var(--danger); }
+    .action-delete:hover { background: var(--danger); color: #fff; }
+    .badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.7rem; font-weight: 500; }
+    .badge-active { background: rgba(46,213,115,0.15); color: var(--success); }
+    .badge-inactive { background: rgba(255,71,87,0.15); color: var(--danger); }
+    .create-form { padding: 2rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 2rem; }
+    .create-form h3 { font-size: 1.1rem; font-weight: 500; margin-bottom: 1.5rem; }
+    .empty { color: var(--muted); text-align: center; padding: 3rem; font-size: 0.9rem; }
+    .toast { position: fixed; bottom: 2rem; right: 2rem; padding: 1rem 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; transform: translateY(100px); opacity: 0; transition: all 0.3s; z-index: 1000; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { border-color: var(--success); }
+    .toast.error { border-color: var(--danger); }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; }
+    .stat-card { padding: 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; text-align: center; }
+    .stat-number { font-size: 2rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .stat-label { color: var(--muted); font-size: 0.8rem; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 768px) {
+      .sidebar { width: 100%; height: auto; position: relative; padding: 1.5rem; }
+      .sidebar-nav { flex-direction: row; flex-wrap: wrap; }
+      .nav-btn { padding: 0.625rem 0.875rem; font-size: 0.8rem; }
+      .main { margin-left: 0; padding: 1.5rem; }
+      .layout { flex-direction: column; }
+      .form-row { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">MIRIDIAN</div>
+      <div class="sidebar-sub">Master Admin</div>
+      <nav class="sidebar-nav">
+        <button class="nav-btn active" data-section="dashboard"><span class="nav-icon">◆</span> Dashboard</button>
+        <button class="nav-btn" data-section="sites"><span class="nav-icon">◇</span> Sites</button>
+        <button class="nav-btn" data-section="create"><span class="nav-icon">+</span> Create Site</button>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
+    </aside>
+    <main class="main">
+      <!-- Dashboard -->
+      <section class="section active" id="section-dashboard">
+        <div class="section-header">
+          <h2>Dashboard</h2>
+          <p>Overview of your platform</p>
+        </div>
+        <div class="stats">
+          <div class="stat-card"><div class="stat-number" id="stat-total">0</div><div class="stat-label">Total Sites</div></div>
+          <div class="stat-card"><div class="stat-number" id="stat-active">0</div><div class="stat-label">Active</div></div>
+          <div class="stat-card"><div class="stat-number" id="stat-inactive">0</div><div class="stat-label">Inactive</div></div>
+        </div>
+        <div id="dashboard-sites"></div>
+      </section>
+
+      <!-- Sites List -->
+      <section class="section" id="section-sites">
+        <div class="section-header">
+          <h2>All Sites</h2>
+          <p>Manage your websites</p>
+        </div>
+        <div id="sites-list"></div>
+      </section>
+
+      <!-- Create Site -->
+      <section class="section" id="section-create">
+        <div class="section-header">
+          <h2>Create New Site</h2>
+          <p>Set up a new website with the MIRIDIAN template</p>
+        </div>
+        <div class="create-form">
+          <div class="form-group">
+            <label for="new-name">Site Name</label>
+            <input type="text" id="new-name" placeholder="e.g. My Brand">
+          </div>
+          <div class="form-group">
+            <label for="new-slug">URL Slug</label>
+            <input type="text" id="new-slug" placeholder="e.g. my-brand (lowercase, no spaces)">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="new-admin-user">Admin Username</label>
+              <input type="text" id="new-admin-user" placeholder="e.g. admin">
+            </div>
+            <div class="form-group">
+              <label for="new-admin-pass">Admin Password</label>
+              <input type="password" id="new-admin-pass" placeholder="Password">
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="createSite()">Create Site</button>
+        </div>
+      </section>
+    </main>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const TOKEN_KEY = 'master_token';
+    let token = localStorage.getItem(TOKEN_KEY);
+    let sites = [];
+
+    // Auth check
+    (async () => {
+      if (!token) return window.location.href = '/master/login';
+      const res = await fetch('/api/auth/check', { headers: { 'x-auth-token': token } });
+      const data = await res.json();
+      if (!data.authenticated || data.type !== 'master') {
+        localStorage.removeItem(TOKEN_KEY);
+        window.location.href = '/master/login';
+      }
+      loadSites();
+    })();
+
+    // Navigation
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById('section-' + btn.dataset.section).classList.add('active');
+      });
+    });
+
+    // Auto-generate slug from name
+    document.getElementById('new-name').addEventListener('input', (e) => {
+      const slug = e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      document.getElementById('new-slug').value = slug;
+    });
+
+    async function apiFetch(url, options = {}) {
+      options.headers = { ...options.headers, 'x-auth-token': token, 'Content-Type': 'application/json' };
+      const res = await fetch(url, options);
+      return res.json();
+    }
+
+    async function loadSites() {
+      const data = await apiFetch('/api/master/sites');
+      sites = data.sites || [];
+      renderDashboard();
+      renderSitesList();
+    }
+
+    function renderDashboard() {
+      document.getElementById('stat-total').textContent = sites.length;
+      document.getElementById('stat-active').textContent = sites.filter(s => s.active).length;
+      document.getElementById('stat-inactive').textContent = sites.filter(s => !s.active).length;
+      const container = document.getElementById('dashboard-sites');
+      if (sites.length === 0) {
+        container.innerHTML = '<p class="empty">No sites yet. Create your first site!</p>';
+        return;
+      }
+      container.innerHTML = sites.slice(0, 5).map(site => renderSiteCard(site)).join('');
+    }
+
+    function renderSitesList() {
+      const container = document.getElementById('sites-list');
+      if (sites.length === 0) {
+        container.innerHTML = '<p class="empty">No sites created yet</p>';
+        return;
+      }
+      container.innerHTML = sites.map(site => renderSiteCard(site)).join('');
+    }
+
+    function renderSiteCard(site) {
+      return `
+        <div class="site-card">
+          <div class="site-card-header">
+            <div>
+              <div class="site-card-name">${site.name}</div>
+              <div class="site-card-slug">/s/${site.slug}</div>
+            </div>
+            <span class="badge ${site.active ? 'badge-active' : 'badge-inactive'}">${site.active ? 'Active' : 'Inactive'}</span>
+          </div>
+          <div class="site-card-meta">
+            <span>Admin: ${site.admin.username}</span>
+            <span>Created: ${new Date(site.createdAt).toLocaleDateString()}</span>
+          </div>
+          <div class="site-card-actions">
+            <a href="/s/${site.slug}" target="_blank" class="action-visit">Visit Site →</a>
+            <a href="/s/${site.slug}/admin" target="_blank" class="action-admin">Site Admin</a>
+            <button class="action-toggle ${site.active ? '' : 'inactive'}" onclick="toggleSite('${site.slug}')">${site.active ? 'Deactivate' : 'Activate'}</button>
+            <button class="action-delete" onclick="deleteSite('${site.slug}', '${site.name}')">Delete</button>
+          </div>
+        </div>
+      `;
+    }
+
+    async function createSite() {
+      const name = document.getElementById('new-name').value.trim();
+      const slug = document.getElementById('new-slug').value.trim();
+      const adminUsername = document.getElementById('new-admin-user').value.trim();
+      const adminPassword = document.getElementById('new-admin-pass').value.trim();
+      if (!name || !slug || !adminUsername || !adminPassword) return showToast('All fields are required', 'error');
+      const data = await apiFetch('/api/master/sites', {
+        method: 'POST',
+        body: JSON.stringify({ name, slug, adminUsername, adminPassword })
+      });
+      if (data.success) {
+        showToast('Site created successfully!', 'success');
+        document.getElementById('new-name').value = '';
+        document.getElementById('new-slug').value = '';
+        document.getElementById('new-admin-user').value = '';
+        document.getElementById('new-admin-pass').value = '';
+        loadSites();
+        // Switch to sites tab
+        document.querySelector('[data-section="sites"]').click();
+      } else {
+        showToast(data.error || 'Error creating site', 'error');
+      }
+    }
+
+    async function toggleSite(slug) {
+      await apiFetch(`/api/master/sites/${slug}/toggle`, { method: 'PUT' });
+      loadSites();
+      showToast('Site status updated', 'success');
+    }
+
+    async function deleteSite(slug, name) {
+      if (!confirm(`Are you sure you want to delete "${name}"?`)) return;
+      await apiFetch(`/api/master/sites/${slug}`, { method: 'DELETE' });
+      loadSites();
+      showToast('Site deleted', 'success');
+    }
+
+    function logout() {
+      fetch('/api/auth/logout', { method: 'POST', headers: { 'x-auth-token': token } });
+      localStorage.removeItem(TOKEN_KEY);
+      window.location.href = '/';
+    }
+
+    function showToast(msg, type = 'success') {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.className = `toast ${type} show`;
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+  </script>
+</body>
+</html>

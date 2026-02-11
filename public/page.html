@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loading...</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --color-bg: #0a0a0a; --color-text: #ffffff;
+      --color-text-muted: rgba(255, 255, 255, 0.6);
+      --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --transition-fast: 0.2s ease;
+    }
+    html, body {
+      min-height: 100%; font-family: var(--font-family);
+      background-color: var(--color-bg); color: var(--color-text);
+      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+    }
+    .page-header {
+      padding: 2rem 4rem; display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      animation: fadeInDown 0.6s ease forwards; opacity: 0;
+    }
+    .logo-link {
+      font-size: 1.1rem; font-weight: 600; letter-spacing: 0.3em;
+      text-transform: uppercase; color: var(--color-text); text-decoration: none;
+      transition: var(--transition-fast);
+    }
+    .logo-link:hover { opacity: 0.8; }
+    .back-link {
+      color: var(--color-text-muted); text-decoration: none; font-size: 0.85rem;
+      transition: var(--transition-fast); display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+    .back-link:hover { color: var(--color-text); }
+    .page-content {
+      max-width: 800px; margin: 0 auto; padding: 4rem 4rem 6rem;
+      animation: fadeInUp 0.8s ease forwards; animation-delay: 0.2s; opacity: 0;
+    }
+    .page-content h1 { font-size: 2.5rem; font-weight: 500; line-height: 1.2; margin-bottom: 2rem; letter-spacing: -0.02em; }
+    .page-content h2 { font-size: 1.75rem; font-weight: 500; line-height: 1.3; margin-top: 2.5rem; margin-bottom: 1rem; }
+    .page-content h3 { font-size: 1.25rem; font-weight: 500; line-height: 1.4; margin-top: 2rem; margin-bottom: 0.75rem; }
+    .page-content p { font-size: 1.05rem; font-weight: 300; line-height: 1.8; color: var(--color-text-muted); margin-bottom: 1.5rem; }
+    .page-content a { color: var(--color-text); text-decoration: underline; text-underline-offset: 3px; transition: var(--transition-fast); }
+    .page-content a:hover { opacity: 0.7; }
+    .page-content ul, .page-content ol { margin-bottom: 1.5rem; padding-left: 1.5rem; }
+    .page-content li { font-size: 1rem; font-weight: 300; line-height: 1.8; color: var(--color-text-muted); margin-bottom: 0.5rem; }
+    .page-content img { max-width: 100%; height: auto; border-radius: 8px; margin: 2rem 0; }
+    .page-content blockquote {
+      border-left: 3px solid rgba(255,255,255,0.2); padding-left: 1.5rem;
+      margin: 2rem 0; font-style: italic; color: var(--color-text-muted);
+    }
+    .page-content strong { color: var(--color-text); font-weight: 500; }
+    .page-content em { font-style: italic; }
+    .page-content hr { border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 3rem 0; }
+    .page-nav {
+      max-width: 800px; margin: 0 auto; padding: 0 4rem 4rem;
+      border-top: 1px solid rgba(255,255,255,0.08); padding-top: 2rem;
+      animation: fadeIn 1s ease forwards; animation-delay: 0.5s; opacity: 0;
+    }
+    .page-nav-title { font-size: 0.8rem; color: var(--color-text-muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem; }
+    .page-nav-links { display: flex; flex-direction: column; gap: 0.5rem; }
+    .page-nav-link {
+      color: var(--color-text); text-decoration: none; font-size: 0.9rem;
+      display: inline-flex; align-items: center; gap: 0.5rem; width: fit-content;
+      transition: var(--transition-fast);
+    }
+    .page-nav-link:hover { opacity: 0.7; }
+    .not-found { text-align: center; padding: 6rem 2rem; }
+    .not-found h1 { font-size: 3rem; margin-bottom: 1rem; }
+    .not-found p { color: var(--color-text-muted); font-size: 1.1rem; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 768px) {
+      .page-header { padding: 1.5rem 2rem; }
+      .page-content { padding: 2.5rem 2rem 4rem; }
+      .page-content h1 { font-size: 2rem; }
+      .page-nav { padding: 0 2rem 3rem; }
+    }
+    @media (max-width: 480px) {
+      .page-header { padding: 1.25rem 1.5rem; }
+      .page-content { padding: 2rem 1.5rem 3rem; }
+      .page-content h1 { font-size: 1.75rem; }
+      .logo-link { font-size: 0.95rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="page-header">
+    <a href="#" class="logo-link" id="brand-name">Loading...</a>
+    <a href="#" class="back-link" id="back-link">&larr; Back to Home</a>
+  </header>
+
+  <div class="page-content" id="page-content">
+    <p style="color: var(--color-text-muted);">Loading...</p>
+  </div>
+
+  <nav class="page-nav" id="page-nav" style="display:none;">
+    <div class="page-nav-title">More Pages</div>
+    <div class="page-nav-links" id="page-nav-links"></div>
+  </nav>
+
+  <script>
+    const pathParts = window.location.pathname.split('/');
+    const siteSlug = pathParts[2];
+    const pageSlug = pathParts[4];
+
+    async function loadPage() {
+      try {
+        // Load site content for brand and menu
+        const siteRes = await fetch(`/api/site/${siteSlug}/content`);
+        const siteContent = await siteRes.json();
+
+        document.getElementById('brand-name').textContent = siteContent.brand.name;
+        document.getElementById('brand-name').href = `/s/${siteSlug}`;
+        document.getElementById('back-link').href = `/s/${siteSlug}`;
+
+        // Load page content
+        const pageRes = await fetch(`/api/site/${siteSlug}/pages/${pageSlug}`);
+        const pageData = await pageRes.json();
+
+        if (!pageData.success) {
+          document.getElementById('page-content').innerHTML = `
+            <div class="not-found">
+              <h1>404</h1>
+              <p>Page not found</p>
+            </div>
+          `;
+          document.title = 'Page Not Found';
+          return;
+        }
+
+        document.title = `${pageData.page.title} - ${siteContent.brand.name}`;
+        document.getElementById('page-content').innerHTML = pageData.page.content;
+
+        // Show navigation to other pages
+        const pages = siteContent.pages || [];
+        const otherPages = pages.filter(p => p.slug !== pageSlug);
+        if (otherPages.length > 0) {
+          document.getElementById('page-nav').style.display = 'block';
+          document.getElementById('page-nav-links').innerHTML = otherPages.map(p => `
+            <a href="/s/${siteSlug}/page/${p.slug}" class="page-nav-link">${p.title} &rarr;</a>
+          `).join('');
+        }
+
+        // Also add menu items as navigation
+        if (siteContent.menu && siteContent.menu.length > 0) {
+          const menuPages = siteContent.menu.filter(m => !m.url.includes(pageSlug));
+          if (menuPages.length > 0 && otherPages.length === 0) {
+            document.getElementById('page-nav').style.display = 'block';
+            document.getElementById('page-nav-links').innerHTML = menuPages.map(m => `
+              <a href="${m.url}" class="page-nav-link">${m.text} &rarr;</a>
+            `).join('');
+          }
+        }
+
+      } catch (error) {
+        console.error('Error loading page:', error);
+        document.getElementById('page-content').innerHTML = `
+          <div class="not-found">
+            <h1>Error</h1>
+            <p>Could not load this page</p>
+          </div>
+        `;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadPage);
+  </script>
+</body>
+</html>
