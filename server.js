@@ -659,6 +659,15 @@ app.get('/api/site/:slug/export', authMiddleware('site'), (req, res) => {
   // Add content.json (without collaborators for security)
   const exportContent = { ...content };
   delete exportContent.collaborators;
+  
+  // Fix menu links for standalone (remove /s/:slug prefix)
+  if (exportContent.menu) {
+    exportContent.menu = exportContent.menu.map(item => ({
+      ...item,
+      url: item.url.replace(`/s/${slug}/page/`, '/page/')
+    }));
+  }
+  
   archive.append(JSON.stringify(exportContent, null, 2), { name: 'data/content.json' });
 
   // Add public files

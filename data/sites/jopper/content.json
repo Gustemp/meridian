@@ -1,0 +1,45 @@
+{
+  "brand": {
+    "name": "JOPPERT",
+    "logo": ""
+  },
+  "hero": {
+    "title": "A partner for boardless challenges.",
+    "description": "Building and structuring ventures that operate beyond jurisdictions and conventional limits.\nWe transform regulatory complexity, capital strategy, and emerging technologies into executable systems."
+  },
+  "menu": [
+    {
+      "id": 1,
+      "text": "About",
+      "url": "/s/jopper/page/about"
+    },
+    {
+      "id": 2,
+      "text": "Contact",
+      "url": "/s/jopper/page/contact"
+    }
+  ],
+  "videos": {
+    "source": "pexels",
+    "theme": "lifestyle",
+    "interval": 3000,
+    "items": []
+  },
+  "pexels": {
+    "apiKey": ""
+  },
+  "pages": [
+    {
+      "id": 1,
+      "slug": "about",
+      "title": "About",
+      "content": "<h2>About Me</h2>\n\n<h2>About</h2>\n\n<p>\nGustavo Joppert is a enterpreneur focused on designing and scaling high-impact initiatives across finance, technology, and innovation.\n</p>\n\n<p>\nOperating at the intersection of law, capital, and emerging markets, he creates and structures ventures from first principles - aligning regulatory architecture, capital strategy, and execution.\n</p>\n\n<p>\nHis work spans tokenized financial models, cross-border corporate structures, ecosystem development, and institutional partnerships across Brazil and Europe.\n</p>\n\n<p>\nRather than acting solely as an advisor, Gustavo operates as a builder - transforming complex ideas into operational systems and scalable ventures.\n</p>"
+    },
+    {
+      "id": 2,
+      "slug": "contact",
+      "title": "Contact",
+      "content": "<h2>Contact</h2><p>Get in touch - gustavo@joppert.com.br .</p>"
+    }
+  ]
+}

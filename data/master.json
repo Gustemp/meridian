@@ -25,6 +25,18 @@
         "username": "admin",
         "password": "admin"
       }
+    },
+    {
+      "id": "jopper",
+      "slug": "jopper",
+      "name": "JOPPER",
+      "customDomain": "www.joppert.com.br",
+      "createdAt": "2026-02-26T13:44:33.681Z",
+      "active": true,
+      "admin": {
+        "username": "gustavo",
+        "password": "Planethemp1539!"
+      }
     }
   ]
 }
