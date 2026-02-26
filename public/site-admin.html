@@ -302,29 +302,47 @@
                 • Clica em "Save Domain"
               </p>
 
-              <p style="margin-bottom: 1rem;"><strong>Passo 2: Configura DNS</strong></p>
+              <p style="margin-bottom: 1rem;"><strong>Passo 2: Identifica Onde o MIRIDIAN Está Hospedado</strong></p>
+              <p style="margin-bottom: 1.5rem; padding-left: 1rem;">
+                <strong>🚂 Se estás no Railway / Render / Heroku:</strong><br>
+                • Não precisas de IP!<br>
+                • Usa o domínio automático (ex: <code style="background: #000; padding: 2px 6px; border-radius: 3px;">miridian.up.railway.app</code>)<br>
+                • Ou configura direto no dashboard do provider<br>
+                <br>
+                <strong>☁️ Se estás num VPS (DigitalOcean, AWS, Linode):</strong><br>
+                • Descobre o IP: <code style="background: #000; padding: 2px 6px; border-radius: 3px;">curl ifconfig.me</code><br>
+                • Ou verifica no painel do provider<br>
+                • Exemplo: <code style="background: #000; padding: 2px 6px; border-radius: 3px;">203.0.113.45</code><br>
+                <br>
+                <strong>💻 Se estás em localhost:</strong><br>
+                • ⚠️ Domínios públicos NÃO funcionam com localhost<br>
+                • Faz deploy primeiro (Railway, Render, VPS, etc)
+              </p>
+
+              <p style="margin-bottom: 1rem;"><strong>Passo 3: Configura DNS</strong></p>
               <p style="margin-bottom: 1.5rem; padding-left: 1rem;">
                 No teu registrador de domínio (GoDaddy, Namecheap, Hostinger, etc):<br>
                 <br>
-                1. Vai para <strong>DNS Settings / DNS Management</strong><br>
-                2. Adiciona um registo <strong>A</strong> ou <strong>CNAME</strong>:<br>
-                <br>
-                <strong>Se o servidor MIRIDIAN tem IP fixo:</strong><br>
-                <code style="background: #000; padding: 4px 8px; border-radius: 3px; display: inline-block; margin: 0.5rem 0;">
-                Tipo: A<br>
-                Nome: @ (ou www)<br>
-                Valor: [IP do servidor MIRIDIAN]
-                </code><br>
-                <br>
-                <strong>Se o servidor tem domínio:</strong><br>
+                <strong>Se estás no Railway/Render/Heroku (usa CNAME):</strong><br>
                 <code style="background: #000; padding: 4px 8px; border-radius: 3px; display: inline-block; margin: 0.5rem 0;">
                 Tipo: CNAME<br>
                 Nome: www<br>
-                Valor: [dominio-do-servidor.com]
-                </code>
+                Valor: miridian.up.railway.app (ou o domínio do teu provider)<br>
+                TTL: 3600
+                </code><br>
+                <br>
+                <strong>Se estás num VPS com IP (usa A):</strong><br>
+                <code style="background: #000; padding: 4px 8px; border-radius: 3px; display: inline-block; margin: 0.5rem 0;">
+                Tipo: A<br>
+                Nome: @ (ou www)<br>
+                Valor: 203.0.113.45 (o IP do teu servidor)<br>
+                TTL: 3600
+                </code><br>
+                <br>
+                💡 <strong>Dica Railway:</strong> Podes configurar direto no Railway Dashboard → Settings → Domains
               </p>
 
-              <p style="margin-bottom: 1rem;"><strong>Passo 3: Aguarda Propagação</strong></p>
+              <p style="margin-bottom: 1rem;"><strong>Passo 4: Aguarda Propagação</strong></p>
               <p style="margin-bottom: 1.5rem; padding-left: 1rem;">
                 • Normalmente leva 15-30 minutos<br>
                 • Pode demorar até 48 horas em alguns casos<br>
