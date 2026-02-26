@@ -293,7 +293,13 @@
             <div style="color: var(--muted); font-size: 0.9rem; line-height: 1.6;">
               <p style="margin-bottom: 1.5rem; padding: 1rem; background: #0d3a1f; border-radius: 4px; border-left: 3px solid #22c55e;">
                 ✅ <strong>O domínio funciona DIRETO no servidor MIRIDIAN!</strong><br>
-                Não precisas exportar nem fazer deploy separado. Basta configurar o DNS.
+                Não precisas exportar nem fazer deploy separado. Cada site pode ter o seu próprio domínio.
+              </p>
+
+              <p style="margin-bottom: 1.5rem; padding: 1rem; background: #1a2a3a; border-radius: 4px; border-left: 3px solid #4a9eff;">
+                🔒 <strong>SSL/HTTPS Obrigatório:</strong> Para custom domains funcionarem com HTTPS (essencial!), 
+                recomendamos usar <strong>Cloudflare</strong> (grátis). Isto permite múltiplos sites com domínios diferentes, 
+                todos com SSL automático.
               </p>
 
               <p style="margin-bottom: 1rem;"><strong>Passo 1: Guarda o Domínio</strong></p>
@@ -319,27 +325,40 @@
                 • Faz deploy primeiro (Railway, Render, VPS, etc)
               </p>
 
-              <p style="margin-bottom: 1rem;"><strong>Passo 3: Configura DNS</strong></p>
+              <p style="margin-bottom: 1rem;"><strong>Passo 3: Configura Cloudflare (Recomendado para SSL)</strong></p>
               <p style="margin-bottom: 1.5rem; padding-left: 1rem;">
-                No teu registrador de domínio (GoDaddy, Namecheap, Hostinger, etc):<br>
+                <strong>🌐 Cloudflare Setup (Grátis + SSL Automático):</strong><br>
                 <br>
-                <strong>Se estás no Railway/Render/Heroku (usa CNAME):</strong><br>
+                1. Cria conta em <a href="https://dash.cloudflare.com/sign-up" target="_blank" style="color: #4a9eff;">cloudflare.com</a><br>
+                2. Clica "Add a Site" e insere o teu domínio (ex: <code style="background: #000; padding: 2px 6px; border-radius: 3px;">joppert.com.br</code>)<br>
+                3. Escolhe o plano <strong>Free</strong><br>
+                4. Cloudflare mostra 2 nameservers (ex: <code style="background: #000; padding: 2px 6px; border-radius: 3px;">ns1.cloudflare.com</code>)<br>
+                5. Vai ao teu registrador (Registro.br, GoDaddy, etc) e <strong>atualiza os nameservers</strong><br>
+                6. Volta ao Cloudflare → DNS → Add record:<br>
+                <br>
                 <code style="background: #000; padding: 4px 8px; border-radius: 3px; display: inline-block; margin: 0.5rem 0;">
                 Tipo: CNAME<br>
                 Nome: www<br>
-                Valor: miridian.up.railway.app (ou o domínio do teu provider)<br>
-                TTL: 3600
+                Target: meridian-production.up.railway.app (domínio do Railway)<br>
+                Proxy status: Proxied (nuvem laranja 🟠)
                 </code><br>
                 <br>
-                <strong>Se estás num VPS com IP (usa A):</strong><br>
+                7. Cloudflare → SSL/TLS → Escolhe <strong>"Full"</strong><br>
+                8. ✅ Aguarda 5-15 minutos → <code style="background: #000; padding: 2px 6px; border-radius: 3px;">https://www.mysite.com</code> funciona!
+              </p>
+
+              <p style="margin-bottom: 1rem;"><strong>Alternativa: DNS Direto (Sem SSL Automático)</strong></p>
+              <p style="margin-bottom: 1.5rem; padding-left: 1rem;">
+                ⚠️ <strong>Atenção:</strong> Sem Cloudflare, terás problemas de SSL para múltiplos custom domains.<br>
+                <br>
+                <strong>Se mesmo assim quiseres usar DNS direto:</strong><br>
                 <code style="background: #000; padding: 4px 8px; border-radius: 3px; display: inline-block; margin: 0.5rem 0;">
-                Tipo: A<br>
-                Nome: @ (ou www)<br>
-                Valor: 203.0.113.45 (o IP do teu servidor)<br>
-                TTL: 3600
+                Tipo: CNAME<br>
+                Nome: www<br>
+                Valor: meridian-production.up.railway.app
                 </code><br>
                 <br>
-                💡 <strong>Dica Railway:</strong> Podes configurar direto no Railway Dashboard → Settings → Domains
+                Depois configura SSL no Railway Dashboard → Networking → Custom Domain
               </p>
 
               <p style="margin-bottom: 1rem;"><strong>Passo 4: Aguarda Propagação</strong></p>
