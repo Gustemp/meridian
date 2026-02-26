@@ -73,6 +73,91 @@ Cada site pode ter múltiplas subpáginas:
 - Navegação automática entre páginas
 - Conteúdo totalmente personalizável
 
+## 👥 Sistema de Colaboradores
+
+Cada site pode ter colaboradores com acesso ao painel admin:
+
+- **Site Admin** pode adicionar/remover colaboradores
+- **Colaboradores** têm acesso total ao conteúdo mas não podem gerir a equipa
+- Login independente com credenciais próprias
+- Isolamento completo entre sites
+
+## 📦 Export & Deploy Independente
+
+O MIRIDIAN suporta **deploy independente** de cada site:
+
+### Como Exportar um Site
+
+1. No **Master Admin** ou **Site Admin**, clique em "📦 Export"
+2. Será baixado um arquivo ZIP com o site standalone
+3. O site exportado é **totalmente independente** do MIRIDIAN
+
+### O que vem no Export
+
+```
+site-standalone.zip
+├── server.js           # Servidor Express standalone
+├── package.json        # Dependências mínimas
+├── README.md          # Instruções de deploy
+├── .gitignore         # Configuração Git
+├── data/
+│   └── content.json   # Todo o conteúdo do site
+├── uploads/           # Todos os vídeos
+└── public/            # Frontend completo
+```
+
+### Deploy do Site Standalone
+
+**Vercel:**
+```bash
+npm i -g vercel
+cd site-standalone
+npm install
+vercel
+```
+
+**Railway:**
+```bash
+# Conecte o repositório ao Railway
+# Deploy automático
+```
+
+**Heroku:**
+```bash
+heroku create
+git push heroku main
+```
+
+**VPS/Servidor Próprio:**
+```bash
+npm install
+npm start
+# Site disponível em http://localhost:3000
+```
+
+### Domínio Customizado
+
+Após o deploy, configure o domínio customizado no painel do seu provider:
+- **Vercel**: Settings → Domains
+- **Railway**: Settings → Domains
+- **Heroku**: Settings → Domains
+
+### Vantagens do Deploy Independente
+
+✅ **Total independência** do MIRIDIAN  
+✅ **Domínio próprio** (ex: `www.seusite.com`)  
+✅ **Escalabilidade** individual  
+✅ **Atualizações** não afetam outros sites  
+✅ **Backup** completo do site  
+✅ **Portabilidade** entre providers  
+
+### Sistema Híbrido
+
+- Sites podem ficar no MIRIDIAN ou serem exportados
+- Re-export a qualquer momento para atualizar
+- Dados podem ser editados no MIRIDIAN e re-exportados
+- Cada site evolui de forma independente após export
+
 ## 🎨 Pexels API
 
 Para usar vídeos do Pexels:

@@ -4,6 +4,7 @@ const axios = require('axios');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
+const archiver = require('archiver');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -527,6 +528,73 @@ app.delete('/api/site/:slug/collaborators/:id', authMiddleware('site'), (req, re
   content.collaborators = (content.collaborators || []).filter(c => c.id !== parseInt(req.params.id));
   writeSiteContent(req.params.slug, content);
   res.json({ success: true });
+});
+
+// ============================================================
+// EXPORT SITE (standalone deployment)
+// ============================================================
+
+// Export site as standalone project
+app.get('/api/site/:slug/export', authMiddleware('site'), (req, res) => {
+  const { slug } = req.params;
+  
+  // Only site admin or master can export
+  if (req.session.type !== 'master' && req.session.role === 'collaborator') {
+    return res.status(403).json({ error: 'Apenas o admin do site pode exportar' });
+  }
+  
+  const content = readSiteContent(slug);
+  if (!content) return res.status(404).json({ error: 'Site não encontrado' });
+  
+  const master = readMaster();
+  const site = master.sites.find(s => s.slug === slug);
+  if (!site) return res.status(404).json({ error: 'Site não encontrado' });
+
+  // Create ZIP archive
+  const archive = archiver('zip', { zlib: { level: 9 } });
+  
+  res.attachment(`${slug}-standalone.zip`);
+  archive.pipe(res);
+
+  // Add server.js
+  const serverTemplate = fs.readFileSync(path.join(__dirname, 'templates', 'standalone-server.js'), 'utf8');
+  archive.append(serverTemplate, { name: 'server.js' });
+
+  // Add package.json
+  const packageTemplate = fs.readFileSync(path.join(__dirname, 'templates', 'standalone-package.json'), 'utf8');
+  const packageJson = packageTemplate.replace('{{SITE_NAME}}', slug);
+  archive.append(packageJson, { name: 'package.json' });
+
+  // Add README
+  const readmeTemplate = fs.readFileSync(path.join(__dirname, 'templates', 'standalone-README.md'), 'utf8');
+  const readme = readmeTemplate.replace(/{{SITE_NAME}}/g, site.name);
+  archive.append(readme, { name: 'README.md' });
+
+  // Add .gitignore
+  archive.append('node_modules/\n.env\nuploads/\n*.log\n.DS_Store', { name: '.gitignore' });
+
+  // Add content.json (without collaborators for security)
+  const exportContent = { ...content };
+  delete exportContent.collaborators;
+  archive.append(JSON.stringify(exportContent, null, 2), { name: 'data/content.json' });
+
+  // Add public files
+  const publicFiles = ['site.html', 'page.html', 'main.js', 'styles.css'];
+  publicFiles.forEach(file => {
+    const filePath = path.join(__dirname, 'public', file);
+    if (fs.existsSync(filePath)) {
+      const fileName = file === 'site.html' ? 'index.html' : file;
+      archive.file(filePath, { name: `public/${fileName}` });
+    }
+  });
+
+  // Add uploads directory
+  const uploadsDir = path.join(__dirname, 'uploads', slug);
+  if (fs.existsSync(uploadsDir)) {
+    archive.directory(uploadsDir, 'uploads');
+  }
+
+  archive.finalize();
 });
 
 // ============================================================

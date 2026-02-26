@@ -242,6 +242,7 @@
             <a href="/s/${site.slug}" target="_blank" class="action-visit">Visit Site →</a>
             <a href="/s/${site.slug}/admin" target="_blank" class="action-admin">Site Admin</a>
             <button class="action-toggle ${site.active ? '' : 'inactive'}" onclick="toggleSite('${site.slug}')">${site.active ? 'Deactivate' : 'Activate'}</button>
+            <button class="action-admin" onclick="exportSite('${site.slug}')">📦 Export</button>
             <button class="action-delete" onclick="deleteSite('${site.slug}', '${site.name}')">Delete</button>
           </div>
         </div>
@@ -283,6 +284,11 @@
       await apiFetch(`/api/master/sites/${slug}`, { method: 'DELETE' });
       loadSites();
       showToast('Site deleted', 'success');
+    }
+
+    function exportSite(slug) {
+      showToast('Preparing export...', 'success');
+      window.location.href = `/api/site/${slug}/export`;
     }
 
     function logout() {

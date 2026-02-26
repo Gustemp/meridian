@@ -125,6 +125,7 @@
       <div class="sidebar-logo" id="sidebar-logo">Admin</div>
       <div class="sidebar-sub" id="sidebar-slug">Loading...</div>
       <a href="#" class="view-site" id="view-site-link" target="_blank">View Site →</a>
+      <button class="view-site" onclick="exportSite()" style="width: 100%; text-align: center; background: none; border: 1px solid var(--border); color: var(--text); cursor: pointer; margin-top: 0.5rem;">📦 Export Standalone</button>
       <nav class="sidebar-nav">
         <button class="nav-btn active" data-section="brand"><span class="nav-icon">◆</span> Brand</button>
         <button class="nav-btn" data-section="hero"><span class="nav-icon">◇</span> Hero</button>
@@ -578,6 +579,11 @@
       }
       editor.value = editor.value.substring(0, start) + insertion + editor.value.substring(end);
       editor.focus();
+    }
+
+    function exportSite() {
+      showToast('Preparing standalone export...', 'success');
+      window.location.href = `/api/site/${slug}/export`;
     }
 
     function logout() {
