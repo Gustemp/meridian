@@ -402,16 +402,31 @@
 
               <p style="margin-bottom: 1rem;"><strong>Passo 2: Push para GitHub</strong></p>
               <p style="margin-bottom: 1.5rem; padding-left: 1rem;">
-                • Cria um novo repo no GitHub (ex: <code style="background: #000; padding: 2px 6px; border-radius: 3px;">mysite-deploy</code>)<br>
-                • Faz push do código exportado:<br>
-                <code style="background: #000; padding: 4px 8px; border-radius: 3px; display: block; margin: 0.5rem 0;">
-                cd mysite<br>
+                <strong>Opção A - GitHub Desktop (Mais Fácil):</strong><br>
+                • Baixa <a href="https://desktop.github.com" target="_blank" style="color: #4a9eff;">GitHub Desktop</a> (grátis)<br>
+                • Abre GitHub Desktop → File → Add Local Repository<br>
+                • Seleciona a pasta do site exportado<br>
+                • Clica "Publish repository" → Escolhe nome e visibilidade<br>
+                • ✅ Pronto! Pasta completa no GitHub<br>
+                <br>
+                <strong>Opção B - Terminal (Se sabes usar):</strong><br>
+                • Abre Terminal na pasta do site exportado<br>
+                • Cria repo no GitHub primeiro: <a href="https://github.com/new" target="_blank" style="color: #4a9eff;">github.com/new</a><br>
+                • Corre os comandos:<br>
+                <code style="background: #000; padding: 4px 8px; border-radius: 3px; display: block; margin: 0.5rem 0; font-size: 0.85rem;">
                 git init<br>
                 git add .<br>
                 git commit -m "Initial deploy"<br>
-                git remote add origin https://github.com/user/mysite-deploy.git<br>
+                git branch -M main<br>
+                git remote add origin https://github.com/SEU-USER/SEU-REPO.git<br>
                 git push -u origin main
                 </code>
+                <br>
+                <strong>Opção C - VS Code (Se usas):</strong><br>
+                • Abre a pasta do site no VS Code<br>
+                • Clica no ícone Source Control (lado esquerdo)<br>
+                • Clica "Publish to GitHub"<br>
+                • Escolhe nome do repo → ✅ Feito!
               </p>
 
               <p style="margin-bottom: 1rem;"><strong>Passo 3: Deploy no Railway</strong></p>
