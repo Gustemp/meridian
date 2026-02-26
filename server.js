@@ -268,6 +268,25 @@ app.put('/api/master/sites/:slug/toggle', authMiddleware('master'), (req, res) =
   res.json({ success: true, active: site.active });
 });
 
+// Update custom domain
+app.put('/api/site/:slug/domain', authMiddleware('site'), (req, res) => {
+  const { slug } = req.params;
+  const { customDomain } = req.body;
+  
+  // Only site admin or master can update domain
+  if (req.session.type !== 'master' && req.session.role === 'collaborator') {
+    return res.status(403).json({ error: 'Apenas o admin do site pode atualizar o domínio' });
+  }
+  
+  const master = readMaster();
+  const site = master.sites.find(s => s.slug === slug);
+  if (!site) return res.status(404).json({ error: 'Site não encontrado' });
+  
+  site.customDomain = customDomain || '';
+  writeMaster(master);
+  res.json({ success: true, customDomain: site.customDomain });
+});
+
 // ============================================================
 // SITE API ROUTES (per-site)
 // ============================================================

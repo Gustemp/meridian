@@ -134,6 +134,7 @@
         <button class="nav-btn" data-section="pexels"><span class="nav-icon">◎</span> Pexels API</button>
         <button class="nav-btn" data-section="pages"><span class="nav-icon">▤</span> Pages</button>
         <button class="nav-btn" data-section="collaborators" id="nav-collaborators"><span class="nav-icon">👥</span> Team</button>
+        <button class="nav-btn" data-section="settings"><span class="nav-icon">⚙️</span> Settings</button>
       </nav>
       <div class="sidebar-footer">
         <button class="logout-btn" onclick="logout()">Logout</button>
@@ -271,6 +272,81 @@
         </div>
         <div id="collaborators-list"></div>
       </section>
+
+      <!-- Settings -->
+      <section class="section" id="section-settings">
+        <div class="section-header"><h2>Settings</h2><p>Configure deployment and custom domain</p></div>
+        
+        <!-- Custom Domain Configuration -->
+        <div style="max-width: 800px; padding: 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 2rem;">
+          <h3 style="font-size: 1.1rem; font-weight: 500; margin-bottom: 1rem;">🌐 Custom Domain</h3>
+          
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label for="custom-domain">Your Custom Domain</label>
+            <input type="text" id="custom-domain" placeholder="e.g. www.mysite.com or mysite.com">
+            <button class="btn btn-primary btn-sm" onclick="saveCustomDomain()" style="margin-top: 0.75rem;">Save Domain</button>
+          </div>
+
+          <div style="background: #1a1a1a; padding: 1.5rem; border-radius: 6px; border-left: 3px solid #4a9eff;">
+            <h4 style="font-size: 0.95rem; font-weight: 500; margin-bottom: 1rem; color: #4a9eff;">📋 Como Configurar o Domínio Customizado</h4>
+            
+            <div style="color: var(--muted); font-size: 0.9rem; line-height: 1.6;">
+              <p style="margin-bottom: 1rem;"><strong>Passo 1: Export o Site</strong></p>
+              <p style="margin-bottom: 1rem; padding-left: 1rem;">
+                • Clica em "📦 Export Standalone" no menu lateral<br>
+                • Baixa o arquivo ZIP com o site completo
+              </p>
+
+              <p style="margin-bottom: 1rem;"><strong>Passo 2: Faz Deploy</strong></p>
+              <p style="margin-bottom: 1rem; padding-left: 1rem;">
+                Escolhe uma plataforma de hosting:<br>
+                • <strong>Vercel:</strong> <code style="background: #000; padding: 2px 6px; border-radius: 3px;">vercel</code><br>
+                • <strong>Railway:</strong> Conecta o GitHub repo<br>
+                • <strong>Heroku:</strong> <code style="background: #000; padding: 2px 6px; border-radius: 3px;">git push heroku main</code><br>
+                • <strong>VPS:</strong> <code style="background: #000; padding: 2px 6px; border-radius: 3px;">npm install && npm start</code>
+              </p>
+
+              <p style="margin-bottom: 1rem;"><strong>Passo 3: Configura DNS</strong></p>
+              <p style="margin-bottom: 1rem; padding-left: 1rem;">
+                No teu registrador de domínio (GoDaddy, Namecheap, etc):<br>
+                • Vai para <strong>DNS Settings</strong><br>
+                • Adiciona um registo <strong>CNAME</strong> ou <strong>A</strong>:<br>
+                <br>
+                <strong>Para Vercel/Railway/Heroku:</strong><br>
+                Tipo: CNAME<br>
+                Nome: www (ou @)<br>
+                Valor: [URL do deploy] (ex: mysite.vercel.app)<br>
+                <br>
+                <strong>Para VPS:</strong><br>
+                Tipo: A<br>
+                Nome: @ (ou www)<br>
+                Valor: [IP do servidor]
+              </p>
+
+              <p style="margin-bottom: 1rem;"><strong>Passo 4: Configura no Provider</strong></p>
+              <p style="padding-left: 1rem;">
+                • <strong>Vercel:</strong> Settings → Domains → Add Domain<br>
+                • <strong>Railway:</strong> Settings → Domains → Custom Domain<br>
+                • <strong>Heroku:</strong> Settings → Domains → Add Domain
+              </p>
+
+              <p style="margin-top: 1.5rem; padding: 1rem; background: #0a0a0a; border-radius: 4px;">
+                ⏱️ <strong>Nota:</strong> Propagação de DNS pode levar até 48 horas, mas normalmente é 15-30 minutos.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Site Information -->
+        <div style="max-width: 800px; padding: 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px;">
+          <h3 style="font-size: 1.1rem; font-weight: 500; margin-bottom: 1rem;">ℹ️ Site Information</h3>
+          <div style="color: var(--muted); font-size: 0.9rem; line-height: 1.8;">
+            <p><strong>MIRIDIAN URL:</strong> <code style="background: #000; padding: 2px 6px; border-radius: 3px;">/s/<span id="settings-slug"></span></code></p>
+            <p><strong>Created:</strong> <span id="settings-created"></span></p>
+            <p><strong>Custom Domain:</strong> <span id="settings-domain-display">Not configured</span></p>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
   <div class="toast" id="toast"></div>
@@ -324,6 +400,7 @@
       renderVideoList();
       renderPagesList();
       loadCollaborators();
+      loadSettings();
     }
 
     // Brand
@@ -682,6 +759,45 @@
         }
       } catch (err) {
         showToast('Error removing collaborator', 'error');
+      }
+    }
+
+    // Settings
+    async function loadSettings() {
+      try {
+        // Load site info from master
+        const siteInfo = await apiFetch(`/api/master/sites`);
+        const currentSite = siteInfo.sites?.find(s => s.slug === slug);
+        
+        if (currentSite) {
+          document.getElementById('settings-slug').textContent = slug;
+          document.getElementById('settings-created').textContent = new Date(currentSite.createdAt).toLocaleDateString();
+          document.getElementById('custom-domain').value = currentSite.customDomain || '';
+          document.getElementById('settings-domain-display').textContent = currentSite.customDomain || 'Not configured';
+        }
+      } catch (err) {
+        // If not master, just show slug
+        document.getElementById('settings-slug').textContent = slug;
+      }
+    }
+
+    async function saveCustomDomain() {
+      const customDomain = document.getElementById('custom-domain').value.trim();
+      
+      try {
+        const result = await apiFetch(`/api/site/${slug}/domain`, {
+          method: 'PUT',
+          body: JSON.stringify({ customDomain })
+        });
+
+        if (result.success) {
+          document.getElementById('settings-domain-display').textContent = customDomain || 'Not configured';
+          showToast('Custom domain saved!', 'success');
+        } else {
+          showToast(result.error || 'Failed to save domain', 'error');
+        }
+      } catch (err) {
+        showToast('Error saving domain', 'error');
       }
     }
   </script>
