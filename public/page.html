@@ -105,19 +105,39 @@
   </nav>
 
   <script>
+    // Detect slug from URL path or custom domain
     const pathParts = window.location.pathname.split('/');
-    const siteSlug = pathParts[2];
-    const pageSlug = pathParts[4];
+    let siteSlug, pageSlug;
+    
+    if (pathParts[1] === 's' && pathParts[2]) {
+      // Traditional /s/:slug/page/:pageSlug format
+      siteSlug = pathParts[2];
+      pageSlug = pathParts[4];
+    } else if (pathParts[1] === 'page' && pathParts[2]) {
+      // Custom domain /page/:pageSlug format
+      siteSlug = null; // Will be fetched from API
+      pageSlug = pathParts[2];
+    }
 
     async function loadPage() {
       try {
         // Load site content for brand and menu
-        const siteRes = await fetch(`/api/site/${siteSlug}/content`);
+        const siteApiUrl = siteSlug ? `/api/site/${siteSlug}/content` : `/api/site/content`;
+        const siteRes = await fetch(siteApiUrl);
         const siteContent = await siteRes.json();
 
+        // If accessed via custom domain, extract slug from response
+        if (!siteSlug && siteContent._slug) {
+          siteSlug = siteContent._slug;
+        }
+
+        // Determine if we're on custom domain
+        const isCustomDomain = !pathParts[1] || pathParts[1] === 'page';
+        const homeUrl = isCustomDomain ? '/' : `/s/${siteSlug}`;
+
         document.getElementById('brand-name').textContent = siteContent.brand.name;
-        document.getElementById('brand-name').href = `/s/${siteSlug}`;
-        document.getElementById('back-link').href = `/s/${siteSlug}`;
+        document.getElementById('brand-name').href = homeUrl;
+        document.getElementById('back-link').href = homeUrl;
 
         // Load page content
         const pageRes = await fetch(`/api/site/${siteSlug}/pages/${pageSlug}`);
@@ -142,8 +162,9 @@
         const otherPages = pages.filter(p => p.slug !== pageSlug);
         if (otherPages.length > 0) {
           document.getElementById('page-nav').style.display = 'block';
+          const pageUrlPrefix = isCustomDomain ? '/page/' : `/s/${siteSlug}/page/`;
           document.getElementById('page-nav-links').innerHTML = otherPages.map(p => `
-            <a href="/s/${siteSlug}/page/${p.slug}" class="page-nav-link">${p.title} &rarr;</a>
+            <a href="${pageUrlPrefix}${p.slug}" class="page-nav-link">${p.title} &rarr;</a>
           `).join('');
         }
 

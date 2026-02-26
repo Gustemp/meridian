@@ -114,7 +114,16 @@
   </main>
 
   <script>
-    const slug = window.location.pathname.split('/')[2];
+    // Detect slug from URL path or custom domain
+    let slug;
+    const pathParts = window.location.pathname.split('/');
+    if (pathParts[1] === 's' && pathParts[2]) {
+      // Traditional /s/:slug format
+      slug = pathParts[2];
+    } else {
+      // Custom domain - fetch slug from server
+      slug = null; // Will be detected by API
+    }
 
     class SitePage {
       constructor() {
@@ -136,8 +145,15 @@
 
       async loadContent() {
         try {
-          const response = await fetch(`/api/site/${slug}/content`);
+          // Use different API endpoint based on access method
+          const apiUrl = slug ? `/api/site/${slug}/content` : `/api/site/content`;
+          const response = await fetch(apiUrl);
           const content = await response.json();
+
+          // If accessed via custom domain, extract slug from response
+          if (!slug && content._slug) {
+            slug = content._slug;
+          }
 
           document.getElementById('brand-name').textContent = content.brand.name;
           document.title = content.brand.name;

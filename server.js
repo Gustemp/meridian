@@ -15,6 +15,28 @@ app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/assets', express.static(path.join(__dirname, 'public', 'assets')));
 
+// Virtual Host Middleware - Map custom domains to site slugs
+app.use((req, res, next) => {
+  const host = req.get('host') || '';
+  const hostname = host.split(':')[0]; // Remove port
+  
+  // Skip for localhost and internal routes
+  if (hostname === 'localhost' || hostname === '127.0.0.1' || req.path.startsWith('/api/') || req.path.startsWith('/master')) {
+    return next();
+  }
+  
+  // Check if hostname matches a custom domain
+  const master = readMaster();
+  const site = master.sites.find(s => s.customDomain && s.customDomain.toLowerCase() === hostname.toLowerCase());
+  
+  if (site && site.active) {
+    // Store the matched site slug for later use
+    req.customDomainSlug = site.slug;
+  }
+  
+  next();
+});
+
 // ============================================================
 // HELPER FUNCTIONS
 // ============================================================
@@ -291,7 +313,23 @@ app.put('/api/site/:slug/domain', authMiddleware('site'), (req, res) => {
 // SITE API ROUTES (per-site)
 // ============================================================
 
-// Get site content (public)
+// Get site content via custom domain (no slug in URL)
+app.get('/api/site/content', (req, res) => {
+  const slug = req.customDomainSlug;
+  if (!slug) {
+    return res.status(400).json({ error: 'Acesso via custom domain não configurado' });
+  }
+  const content = readSiteContent(slug);
+  if (content) {
+    const publicContent = { ...content };
+    if (publicContent.pexels) publicContent.pexels = { apiKey: publicContent.pexels.apiKey ? '***' : '' };
+    res.json({ ...publicContent, _slug: slug }); // Include slug for frontend
+  } else {
+    res.status(404).json({ error: 'Site não encontrado' });
+  }
+});
+
+// Get site content (public) via /s/:slug
 app.get('/api/site/:slug/content', (req, res) => {
   const content = readSiteContent(req.params.slug);
   if (content) {
@@ -651,7 +689,7 @@ app.get('/master/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'master-login.html'));
 });
 
-// Site public page
+// Site public page (via custom domain or /s/:slug)
 app.get('/s/:slug', (req, res) => {
   const master = readMaster();
   const site = master.sites.find(s => s.slug === req.params.slug);
@@ -659,12 +697,31 @@ app.get('/s/:slug', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'site.html'));
 });
 
-// Site subpage
+// Site subpage (via custom domain or /s/:slug/page/:pageSlug)
 app.get('/s/:slug/page/:pageSlug', (req, res) => {
   const master = readMaster();
   const site = master.sites.find(s => s.slug === req.params.slug);
   if (!site || !site.active) return res.status(404).send('Site não encontrado');
   res.sendFile(path.join(__dirname, 'public', 'page.html'));
+});
+
+// Custom domain: Root page
+app.get('/', (req, res) => {
+  // If accessed via custom domain, serve the site
+  if (req.customDomainSlug) {
+    return res.sendFile(path.join(__dirname, 'public', 'site.html'));
+  }
+  // Otherwise, show platform landing or redirect to master
+  res.redirect('/master');
+});
+
+// Custom domain: Subpages
+app.get('/page/:pageSlug', (req, res) => {
+  // Only serve if accessed via custom domain
+  if (req.customDomainSlug) {
+    return res.sendFile(path.join(__dirname, 'public', 'page.html'));
+  }
+  res.status(404).send('Page not found');
 });
 
 // Site admin login

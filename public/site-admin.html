@@ -288,50 +288,58 @@
           </div>
 
           <div style="background: #1a1a1a; padding: 1.5rem; border-radius: 6px; border-left: 3px solid #4a9eff;">
-            <h4 style="font-size: 0.95rem; font-weight: 500; margin-bottom: 1rem; color: #4a9eff;">📋 Como Configurar o Domínio Customizado</h4>
+            <h4 style="font-size: 0.95rem; font-weight: 500; margin-bottom: 1rem; color: #4a9eff;">📋 Como Usar o Domínio Customizado</h4>
             
             <div style="color: var(--muted); font-size: 0.9rem; line-height: 1.6;">
-              <p style="margin-bottom: 1rem;"><strong>Passo 1: Export o Site</strong></p>
-              <p style="margin-bottom: 1rem; padding-left: 1rem;">
-                • Clica em "📦 Export Standalone" no menu lateral<br>
-                • Baixa o arquivo ZIP com o site completo
+              <p style="margin-bottom: 1.5rem; padding: 1rem; background: #0d3a1f; border-radius: 4px; border-left: 3px solid #22c55e;">
+                ✅ <strong>O domínio funciona DIRETO no servidor MIRIDIAN!</strong><br>
+                Não precisas exportar nem fazer deploy separado. Basta configurar o DNS.
               </p>
 
-              <p style="margin-bottom: 1rem;"><strong>Passo 2: Faz Deploy</strong></p>
-              <p style="margin-bottom: 1rem; padding-left: 1rem;">
-                Escolhe uma plataforma de hosting:<br>
-                • <strong>Vercel:</strong> <code style="background: #000; padding: 2px 6px; border-radius: 3px;">vercel</code><br>
-                • <strong>Railway:</strong> Conecta o GitHub repo<br>
-                • <strong>Heroku:</strong> <code style="background: #000; padding: 2px 6px; border-radius: 3px;">git push heroku main</code><br>
-                • <strong>VPS:</strong> <code style="background: #000; padding: 2px 6px; border-radius: 3px;">npm install && npm start</code>
+              <p style="margin-bottom: 1rem;"><strong>Passo 1: Guarda o Domínio</strong></p>
+              <p style="margin-bottom: 1.5rem; padding-left: 1rem;">
+                • Insere o teu domínio no campo acima (ex: <code style="background: #000; padding: 2px 6px; border-radius: 3px;">www.mysite.com</code>)<br>
+                • Clica em "Save Domain"
               </p>
 
-              <p style="margin-bottom: 1rem;"><strong>Passo 3: Configura DNS</strong></p>
-              <p style="margin-bottom: 1rem; padding-left: 1rem;">
-                No teu registrador de domínio (GoDaddy, Namecheap, etc):<br>
-                • Vai para <strong>DNS Settings</strong><br>
-                • Adiciona um registo <strong>CNAME</strong> ou <strong>A</strong>:<br>
+              <p style="margin-bottom: 1rem;"><strong>Passo 2: Configura DNS</strong></p>
+              <p style="margin-bottom: 1.5rem; padding-left: 1rem;">
+                No teu registrador de domínio (GoDaddy, Namecheap, Hostinger, etc):<br>
                 <br>
-                <strong>Para Vercel/Railway/Heroku:</strong><br>
-                Tipo: CNAME<br>
-                Nome: www (ou @)<br>
-                Valor: [URL do deploy] (ex: mysite.vercel.app)<br>
+                1. Vai para <strong>DNS Settings / DNS Management</strong><br>
+                2. Adiciona um registo <strong>A</strong> ou <strong>CNAME</strong>:<br>
                 <br>
-                <strong>Para VPS:</strong><br>
+                <strong>Se o servidor MIRIDIAN tem IP fixo:</strong><br>
+                <code style="background: #000; padding: 4px 8px; border-radius: 3px; display: inline-block; margin: 0.5rem 0;">
                 Tipo: A<br>
                 Nome: @ (ou www)<br>
-                Valor: [IP do servidor]
+                Valor: [IP do servidor MIRIDIAN]
+                </code><br>
+                <br>
+                <strong>Se o servidor tem domínio:</strong><br>
+                <code style="background: #000; padding: 4px 8px; border-radius: 3px; display: inline-block; margin: 0.5rem 0;">
+                Tipo: CNAME<br>
+                Nome: www<br>
+                Valor: [dominio-do-servidor.com]
+                </code>
               </p>
 
-              <p style="margin-bottom: 1rem;"><strong>Passo 4: Configura no Provider</strong></p>
+              <p style="margin-bottom: 1rem;"><strong>Passo 3: Aguarda Propagação</strong></p>
+              <p style="margin-bottom: 1.5rem; padding-left: 1rem;">
+                • Normalmente leva 15-30 minutos<br>
+                • Pode demorar até 48 horas em alguns casos<br>
+                • Testa acessando <code style="background: #000; padding: 2px 6px; border-radius: 3px;">www.mysite.com</code>
+              </p>
+
+              <p style="margin-bottom: 1rem;"><strong>Como Funciona:</strong></p>
               <p style="padding-left: 1rem;">
-                • <strong>Vercel:</strong> Settings → Domains → Add Domain<br>
-                • <strong>Railway:</strong> Settings → Domains → Custom Domain<br>
-                • <strong>Heroku:</strong> Settings → Domains → Add Domain
+                • <code style="background: #000; padding: 2px 6px; border-radius: 3px;">www.mysite.com</code> → Mostra o teu site<br>
+                • <code style="background: #000; padding: 2px 6px; border-radius: 3px;">www.mysite.com/page/about</code> → Páginas internas<br>
+                • <code style="background: #000; padding: 2px 6px; border-radius: 3px;">/s/miridian</code> → Continua funcionando normalmente
               </p>
 
-              <p style="margin-top: 1.5rem; padding: 1rem; background: #0a0a0a; border-radius: 4px;">
-                ⏱️ <strong>Nota:</strong> Propagação de DNS pode levar até 48 horas, mas normalmente é 15-30 minutos.
+              <p style="margin-top: 1.5rem; padding: 1rem; background: #1a2a3a; border-radius: 4px;">
+                💡 <strong>Dica:</strong> Para exportar e hospedar independente, usa o botão "📦 Export Standalone".
               </p>
             </div>
           </div>
