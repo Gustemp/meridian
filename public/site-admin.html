@@ -583,7 +583,8 @@
 
     function exportSite() {
       showToast('Preparing standalone export...', 'success');
-      window.location.href = `/api/site/${slug}/export`;
+      // Add token to URL as query parameter for authentication
+      window.location.href = `/api/site/${slug}/export?token=${token}`;
     }
 
     function logout() {

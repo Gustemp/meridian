@@ -140,6 +140,11 @@
             <label for="new-slug">URL Slug</label>
             <input type="text" id="new-slug" placeholder="e.g. my-brand (lowercase, no spaces)">
           </div>
+          <div class="form-group">
+            <label for="new-domain">Custom Domain (optional)</label>
+            <input type="text" id="new-domain" placeholder="e.g. www.mysite.com">
+            <small style="color: var(--muted); font-size: 0.85rem;">Configure DNS to point to your deployment after export</small>
+          </div>
           <div class="form-row">
             <div class="form-group">
               <label for="new-admin-user">Admin Username</label>
@@ -237,6 +242,7 @@
           <div class="site-card-meta">
             <span>Admin: ${site.admin.username}</span>
             <span>Created: ${new Date(site.createdAt).toLocaleDateString()}</span>
+            ${site.customDomain ? `<span>🌐 ${site.customDomain}</span>` : ''}
           </div>
           <div class="site-card-actions">
             <a href="/s/${site.slug}" target="_blank" class="action-visit">Visit Site →</a>
@@ -252,24 +258,25 @@
     async function createSite() {
       const name = document.getElementById('new-name').value.trim();
       const slug = document.getElementById('new-slug').value.trim();
+      const customDomain = document.getElementById('new-domain').value.trim();
       const adminUsername = document.getElementById('new-admin-user').value.trim();
       const adminPassword = document.getElementById('new-admin-pass').value.trim();
       if (!name || !slug || !adminUsername || !adminPassword) return showToast('All fields are required', 'error');
       const data = await apiFetch('/api/master/sites', {
         method: 'POST',
-        body: JSON.stringify({ name, slug, adminUsername, adminPassword })
+        body: JSON.stringify({ name, slug, customDomain, adminUsername, adminPassword })
       });
       if (data.success) {
         showToast('Site created successfully!', 'success');
         document.getElementById('new-name').value = '';
         document.getElementById('new-slug').value = '';
+        document.getElementById('new-domain').value = '';
         document.getElementById('new-admin-user').value = '';
         document.getElementById('new-admin-pass').value = '';
         loadSites();
-        // Switch to sites tab
         document.querySelector('[data-section="sites"]').click();
       } else {
-        showToast(data.error || 'Error creating site', 'error');
+        showToast(data.error || 'Failed to create site', 'error');
       }
     }
 
@@ -288,7 +295,8 @@
 
     function exportSite(slug) {
       showToast('Preparing export...', 'success');
-      window.location.href = `/api/site/${slug}/export`;
+      // Add token to URL as query parameter for authentication
+      window.location.href = `/api/site/${slug}/export?token=${token}`;
     }
 
     function logout() {

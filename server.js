@@ -69,18 +69,16 @@ const generateToken = () => {
 };
 
 const authMiddleware = (type) => (req, res, next) => {
-  const token = req.headers['x-auth-token'];
+  // Accept token from header or query parameter (for file downloads)
+  const token = req.headers['x-auth-token'] || req.query.token;
   if (!token) return res.status(401).json({ error: 'Token não fornecido' });
   const session = sessions.get(token);
   if (!session) return res.status(401).json({ error: 'Sessão inválida' });
   if (type === 'master' && session.type !== 'master') {
     return res.status(403).json({ error: 'Acesso negado' });
   }
-  if (type === 'site') {
-    const slug = req.params.slug;
-    if (session.type !== 'master' && session.slug !== slug) {
-      return res.status(403).json({ error: 'Acesso negado a este site' });
-    }
+  if (type === 'site' && session.type !== 'site' && session.type !== 'master') {
+    return res.status(403).json({ error: 'Acesso negado' });
   }
   req.session = session;
   next();
@@ -197,7 +195,7 @@ app.get('/api/master/sites', authMiddleware('master'), (req, res) => {
 
 // Create new site
 app.post('/api/master/sites', authMiddleware('master'), (req, res) => {
-  const { name, slug, adminUsername, adminPassword } = req.body;
+  const { name, slug, customDomain, adminUsername, adminPassword } = req.body;
   if (!name || !slug || !adminUsername || !adminPassword) {
     return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
   }
@@ -209,6 +207,7 @@ app.post('/api/master/sites', authMiddleware('master'), (req, res) => {
     id: slug,
     slug,
     name,
+    customDomain: customDomain || '',
     createdAt: new Date().toISOString(),
     active: true,
     admin: { username: adminUsername, password: adminPassword }
