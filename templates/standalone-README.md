@@ -17,7 +17,29 @@ npm run dev
 
 The site will be available at `http://localhost:3000`
 
-## 📁 Project Structure
+## � Admin Panel
+
+Access the admin panel at `http://localhost:3000/admin`
+
+**Default credentials:**
+- Username: `admin`
+- Password: `admin123`
+
+⚠️ **IMPORTANT:** Change these credentials before deploying to production!
+
+Set environment variables:
+```bash
+ADMIN_USERNAME=your_username
+ADMIN_PASSWORD=your_secure_password
+```
+
+In the admin panel you can:
+- ✅ Edit site settings (name, hero, CTA)
+- ✅ Create and manage pages
+- ✅ Upload images and files
+- ✅ Update content in real-time
+
+## �📁 Project Structure
 
 ```
 .

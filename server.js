@@ -652,6 +652,10 @@ app.get('/api/site/:slug/export', authMiddleware('site'), (req, res) => {
   const railwayConfig = fs.readFileSync(path.join(__dirname, 'templates', 'railway.json'), 'utf8');
   archive.append(railwayConfig, { name: 'railway.json' });
 
+  // Add admin.html
+  const adminTemplate = fs.readFileSync(path.join(__dirname, 'templates', 'standalone-admin.html'), 'utf8');
+  archive.append(adminTemplate, { name: 'admin.html' });
+
   // Add content.json (without collaborators for security)
   const exportContent = { ...content };
   delete exportContent.collaborators;
