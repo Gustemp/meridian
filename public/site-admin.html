@@ -382,6 +382,67 @@
           </div>
         </div>
 
+        <!-- Independent Deploy -->
+        <div style="max-width: 800px; padding: 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 2rem;">
+          <h3 style="font-size: 1.1rem; font-weight: 500; margin-bottom: 1rem;">🚀 Independent Deploy (Railway)</h3>
+          
+          <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+            Deploy este site num servidor independente com domínio próprio, SSL automático e auto-deploy via GitHub.
+          </p>
+
+          <div style="background: #1a1a1a; padding: 1.5rem; border-radius: 6px; border-left: 3px solid #22c55e; margin-bottom: 1.5rem;">
+            <h4 style="font-size: 0.95rem; font-weight: 500; margin-bottom: 1rem; color: #22c55e;">📋 Deploy em 3 Passos Simples</h4>
+            
+            <div style="color: var(--muted); font-size: 0.9rem; line-height: 1.6;">
+              <p style="margin-bottom: 1rem;"><strong>Passo 1: Export o Site</strong></p>
+              <p style="margin-bottom: 1.5rem; padding-left: 1rem;">
+                • Clica no botão "📦 Export Standalone" no menu lateral<br>
+                • Extrai o ZIP num local à tua escolha
+              </p>
+
+              <p style="margin-bottom: 1rem;"><strong>Passo 2: Push para GitHub</strong></p>
+              <p style="margin-bottom: 1.5rem; padding-left: 1rem;">
+                • Cria um novo repo no GitHub (ex: <code style="background: #000; padding: 2px 6px; border-radius: 3px;">mysite-deploy</code>)<br>
+                • Faz push do código exportado:<br>
+                <code style="background: #000; padding: 4px 8px; border-radius: 3px; display: block; margin: 0.5rem 0;">
+                cd mysite<br>
+                git init<br>
+                git add .<br>
+                git commit -m "Initial deploy"<br>
+                git remote add origin https://github.com/user/mysite-deploy.git<br>
+                git push -u origin main
+                </code>
+              </p>
+
+              <p style="margin-bottom: 1rem;"><strong>Passo 3: Deploy no Railway</strong></p>
+              <p style="margin-bottom: 1.5rem; padding-left: 1rem;">
+                • Vai a <a href="https://railway.app/new" target="_blank" style="color: #4a9eff;">railway.app/new</a><br>
+                • Escolhe "Deploy from GitHub repo"<br>
+                • Seleciona o repo que criaste<br>
+                • Railway detecta automaticamente o <code style="background: #000; padding: 2px 6px; border-radius: 3px;">railway.json</code><br>
+                • ✅ Deploy automático! Railway dá-te uma URL
+              </p>
+
+              <p style="margin-bottom: 1rem;"><strong>Bonus: Custom Domain + SSL</strong></p>
+              <p style="padding-left: 1rem;">
+                • Railway → Settings → Networking → Custom Domain<br>
+                • Adiciona o teu domínio<br>
+                • Railway gera SSL automaticamente<br>
+                • Configura DNS conforme instruções do Railway
+              </p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="railway-url">Railway Project URL (opcional)</label>
+            <input type="text" id="railway-url" placeholder="https://railway.app/project/...">
+            <small style="color: var(--muted); font-size: 0.85rem; display: block; margin-top: 0.5rem;">
+              Guarda o link do teu projeto Railway para referência futura
+            </small>
+            <button class="btn btn-primary btn-sm" onclick="saveRailwayUrl()" style="margin-top: 0.75rem;">Save Railway URL</button>
+          </div>
+        </div>
+
         <!-- Site Information -->
         <div style="max-width: 800px; padding: 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px;">
           <h3 style="font-size: 1.1rem; font-weight: 500; margin-bottom: 1rem;">ℹ️ Site Information</h3>
@@ -389,6 +450,7 @@
             <p><strong>MIRIDIAN URL:</strong> <code style="background: #000; padding: 2px 6px; border-radius: 3px;">/s/<span id="settings-slug"></span></code></p>
             <p><strong>Created:</strong> <span id="settings-created"></span></p>
             <p><strong>Custom Domain:</strong> <span id="settings-domain-display">Not configured</span></p>
+            <p><strong>Railway Deploy:</strong> <span id="settings-railway-display">Not configured</span></p>
           </div>
         </div>
       </section>
@@ -819,6 +881,10 @@
           document.getElementById('settings-created').textContent = new Date(currentSite.createdAt).toLocaleDateString();
           document.getElementById('custom-domain').value = currentSite.customDomain || '';
           document.getElementById('settings-domain-display').textContent = currentSite.customDomain || 'Not configured';
+          document.getElementById('railway-url').value = currentSite.railwayUrl || '';
+          document.getElementById('settings-railway-display').innerHTML = currentSite.railwayUrl 
+            ? `<a href="${currentSite.railwayUrl}" target="_blank" style="color: #4a9eff;">${currentSite.railwayUrl}</a>`
+            : 'Not configured';
         }
       } catch (err) {
         // If not master, just show slug
@@ -843,6 +909,28 @@
         }
       } catch (err) {
         showToast('Error saving domain', 'error');
+      }
+    }
+
+    async function saveRailwayUrl() {
+      const railwayUrl = document.getElementById('railway-url').value.trim();
+      
+      try {
+        const result = await apiFetch(`/api/site/${slug}/railway`, {
+          method: 'PUT',
+          body: JSON.stringify({ railwayUrl })
+        });
+
+        if (result.success) {
+          document.getElementById('settings-railway-display').innerHTML = railwayUrl 
+            ? `<a href="${railwayUrl}" target="_blank" style="color: #4a9eff;">${railwayUrl}</a>`
+            : 'Not configured';
+          showToast('Railway URL saved!', 'success');
+        } else {
+          showToast(result.error || 'Failed to save Railway URL', 'error');
+        }
+      } catch (err) {
+        showToast('Error saving Railway URL', 'error');
       }
     }
   </script>

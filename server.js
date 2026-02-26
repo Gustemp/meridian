@@ -309,6 +309,25 @@ app.put('/api/site/:slug/domain', authMiddleware('site'), (req, res) => {
   res.json({ success: true, customDomain: site.customDomain });
 });
 
+// Update Railway project URL
+app.put('/api/site/:slug/railway', authMiddleware('site'), (req, res) => {
+  const { slug } = req.params;
+  const { railwayUrl } = req.body;
+  
+  // Only site admin or master can update Railway URL
+  if (req.session.type !== 'master' && req.session.role === 'collaborator') {
+    return res.status(403).json({ error: 'Apenas o admin do site pode atualizar o Railway URL' });
+  }
+  
+  const master = readMaster();
+  const site = master.sites.find(s => s.slug === slug);
+  if (!site) return res.status(404).json({ error: 'Site não encontrado' });
+  
+  site.railwayUrl = railwayUrl || '';
+  writeMaster(master);
+  res.json({ success: true, railwayUrl: site.railwayUrl });
+});
+
 // ============================================================
 // SITE API ROUTES (per-site)
 // ============================================================
@@ -628,6 +647,10 @@ app.get('/api/site/:slug/export', authMiddleware('site'), (req, res) => {
 
   // Add .gitignore
   archive.append('node_modules/\n.env\nuploads/\n*.log\n.DS_Store', { name: '.gitignore' });
+
+  // Add railway.json for Railway deployment
+  const railwayConfig = fs.readFileSync(path.join(__dirname, 'templates', 'railway.json'), 'utf8');
+  archive.append(railwayConfig, { name: 'railway.json' });
 
   // Add content.json (without collaborators for security)
   const exportContent = { ...content };
