@@ -100,19 +100,27 @@ app.put('/api/content', authMiddleware, (req, res) => {
   const content = readContent();
   if (!content) return res.status(500).json({ error: 'Error loading content' });
   
-  const { siteName, tagline, heroTitle, heroSubtitle, ctaText, ctaLink, backgroundType, backgroundColor, backgroundImage, backgroundVideo, pexels } = req.body;
+  // Support both flat and nested updates
+  const { brand, hero, menu, videos, pexels, siteName, heroTitle, heroSubtitle } = req.body;
   
-  content.siteName = siteName || content.siteName;
-  content.tagline = tagline || content.tagline;
-  content.heroTitle = heroTitle || content.heroTitle;
-  content.heroSubtitle = heroSubtitle || content.heroSubtitle;
-  content.ctaText = ctaText || content.ctaText;
-  content.ctaLink = ctaLink || content.ctaLink;
-  content.backgroundType = backgroundType || content.backgroundType;
-  content.backgroundColor = backgroundColor || content.backgroundColor;
-  content.backgroundImage = backgroundImage || content.backgroundImage;
-  content.backgroundVideo = backgroundVideo || content.backgroundVideo;
+  if (brand) {
+    if (!content.brand) content.brand = {};
+    Object.assign(content.brand, brand);
+  }
+  
+  if (hero) {
+    if (!content.hero) content.hero = {};
+    Object.assign(content.hero, hero);
+  }
+  
+  if (menu) content.menu = menu;
+  if (videos) content.videos = { ...content.videos, ...videos };
   if (pexels) content.pexels = pexels;
+  
+  // Legacy support
+  if (siteName) content.brand = { ...content.brand, name: siteName };
+  if (heroTitle) content.hero = { ...content.hero, title: heroTitle };
+  if (heroSubtitle) content.hero = { ...content.hero, description: heroSubtitle };
   
   if (writeContent(content)) {
     res.json({ success: true });

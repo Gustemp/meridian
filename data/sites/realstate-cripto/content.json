@@ -1,11 +1,11 @@
 {
   "brand": {
-    "name": "State Cripto",
+    "name": "Raul Gazolla",
     "logo": ""
   },
   "hero": {
-    "title": "State Cripto",
-    "description": "The best way to use crypto to buy real state"
+    "title": "Be your hero",
+    "description": ""
   },
   "menu": [
     {
@@ -25,45 +25,33 @@
     "interval": 3000,
     "items": [
       {
-        "id": 1770828007894,
-        "url": "https://videos.pexels.com/video-files/4406964/4406964-hd_1280_720_30fps.mp4",
-        "thumbnail": "https://images.pexels.com/videos/4406964/bezahlen-bitcoin-blockchain-borse-4406964.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=630&w=1200",
-        "type": "pexels"
-      },
-      {
-        "id": 1770836315409,
-        "url": "/uploads/realstate-cripto/1770836315389-266494496.mp4",
-        "type": "local",
-        "filename": "openart-video_321f43a7_1770836255319.mp4"
-      },
-      {
-        "id": 1770836322648,
-        "url": "/uploads/realstate-cripto/1770836322630-512968025.mp4",
-        "type": "local",
-        "filename": "openart-video_fc700dd7_1769641257509 (1).mp4"
-      },
-      {
-        "id": 1770837595746,
-        "url": "/uploads/realstate-cripto/1770837595730-358609749.mp4",
-        "type": "local",
-        "filename": "openart-video_557a8186_1770837192285.mp4"
-      },
-      {
-        "id": 1770837776571,
-        "url": "/uploads/realstate-cripto/1770837776557-85151887.mp4",
-        "type": "local",
-        "filename": "openart-video_d6de229e_1769643524005 (1).mp4"
-      },
-      {
-        "id": 1770837791648,
-        "url": "/uploads/realstate-cripto/1770837791638-565085634.mp4",
-        "type": "local",
-        "filename": "openart-video_b8d11f49_1769642256776 (1).mp4"
-      },
-      {
         "id": 1770838000818,
         "url": "https://videos.pexels.com/video-files/7901104/7901104-hd_1920_1080_24fps.mp4",
         "thumbnail": "https://images.pexels.com/videos/7901104/golf-golf-ball-golf-balls-golf-club-7901104.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=630&w=1200",
+        "type": "pexels"
+      },
+      {
+        "id": 1772191369382,
+        "url": "https://videos.pexels.com/video-files/34657487/14690129_640_360_30fps.mp4",
+        "thumbnail": "https://images.pexels.com/videos/34657487/afyonkarahisar-city-discovery-city-life-city-streets-34657487.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=630&w=1200",
+        "type": "pexels"
+      },
+      {
+        "id": 1772191376866,
+        "url": "https://videos.pexels.com/video-files/4143804/4143804-hd_1920_1080_30fps.mp4",
+        "thumbnail": "https://images.pexels.com/videos/4143804/active-big-dog-brown-dog-dog-4143804.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=630&w=1200",
+        "type": "pexels"
+      },
+      {
+        "id": 1772191384748,
+        "url": "https://videos.pexels.com/video-files/7045129/7045129-hd_1280_720_30fps.mp4",
+        "thumbnail": "https://images.pexels.com/videos/7045129/pexels-photo-7045129.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=630&w=1200",
+        "type": "pexels"
+      },
+      {
+        "id": 1772191404715,
+        "url": "https://videos.pexels.com/video-files/16577344/16577344-hd_1280_720_60fps.mp4",
+        "thumbnail": "https://images.pexels.com/videos/16577344/ultra-hd-16577344.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=630&w=1200",
         "type": "pexels"
       }
     ]
